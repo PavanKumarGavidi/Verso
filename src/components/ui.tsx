@@ -193,7 +193,44 @@ export function Corners({ light }: { light?: boolean }) {
 export function Monogram({ className = "" }: { className?: string }) {
   return (
     <span className={`font-display italic font-semibold ${className}`} aria-hidden>
-      V<span className="not-italic font-body font-bold tracking-[0.35em] text-[0.62em] ml-1 align-middle">ERSO</span>
+      V<span className="not-italic font-body font-bold tracking-[0.32em] text-[0.6em] ml-1 align-middle">ASANA</span>
+    </span>
+  );
+}
+
+/* ---------- resilient image ---------- */
+export function Img({
+  src,
+  alt,
+  filter,
+  className = "",
+  wrapClassName = "",
+  eager = false,
+}: {
+  src: string;
+  alt: string;
+  filter?: string;
+  className?: string;
+  wrapClassName?: string;
+  eager?: boolean;
+}) {
+  const [failed, setFailed] = useState(false);
+  return (
+    <span className={`relative block overflow-hidden bg-bone ${wrapClassName}`}>
+      <span className="absolute inset-0 grid select-none place-items-center" aria-hidden>
+        <span className="font-display italic text-4xl text-ink/15">{alt.charAt(0).toUpperCase()}</span>
+      </span>
+      {!failed && (
+        <img
+          src={src}
+          alt={alt}
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
+          className={`h-full w-full object-cover ${className}`}
+          style={filter ? { filter } : undefined}
+          onError={() => setFailed(true)}
+        />
+      )}
     </span>
   );
 }

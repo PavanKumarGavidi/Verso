@@ -1,33 +1,44 @@
-/* Editorial imagery (hosted campaign photography) */
-export const HERO_IMG =
-  "https://image.qwenlm.ai/generated-images/77142b98-b536-4efe-9c34-d466b1468d63/_result.png";
-export const LOOK_1 =
-  "https://image.qwenlm.ai/generated-images/03557c79-4718-49a9-b0b7-3c30fdf2b7e9/_result.png";
-export const LOOK_2 =
-  "https://image.qwenlm.ai/generated-images/68b0b835-8ab8-48e9-8abf-9278f16f88f1/_result.png";
+/* ---------------- imagery ---------------- */
 
-const P_COAT =
-  "https://image.qwenlm.ai/generated-images/367f8270-e39d-4af5-8993-628ff995143a/_result.png";
-const P_KNIT =
-  "https://image.qwenlm.ai/generated-images/59a4f946-0d8f-40c3-aac1-ef8e717db0c6/_result.png";
-const P_TROUSER =
-  "https://image.qwenlm.ai/generated-images/89d0a3ad-39d7-4abe-a3d0-fe4bb7847e90/_result.png";
-const P_SHIRT =
-  "https://image.qwenlm.ai/generated-images/695fbc08-b61f-4495-95a7-4b27caf67b3a/_result.png";
-const P_JACKET =
-  "https://image.qwenlm.ai/generated-images/97bac3c0-b22e-4e6c-b37d-bfa66599417e/_result.png";
-const P_DRESS =
-  "https://image.qwenlm.ai/generated-images/4286ef0a-e38b-4e04-a5bb-3d30c917e022/_result.png";
-const P_BOOT =
-  "https://image.qwenlm.ai/generated-images/f135f647-0173-48dc-86f9-7e14d14eb69d/_result.png";
+const U = (id: string) =>
+  `https://images.unsplash.com/photo-${id}?fm=jpg&q=80&w=1100&auto=format&fit=crop`;
+
+/* generated in-studio */
+export const GEN_KURTA =
+  "https://image.qwenlm.ai/generated-images/f51e6392-02a6-4521-8472-b7ca4c3b1746/_result.png";
+export const GEN_BLAZER =
+  "https://image.qwenlm.ai/generated-images/a9c67a5b-3242-41e3-9f57-1f8cb7d83f22/_result.png";
+
+/* Unsplash photography */
+export const LEH_MAROON = U("1756483488645-5973a1a92e33");
+export const LEH_GREEN = U("1756483510809-122c56fbb035");
+export const LEH_ROSE = U("1756483510859-c0ab4c45782c");
+export const LEH_BRIDAL = U("1762708595603-3b06c63dce9c");
+export const SONA_TRAD = U("1767955694884-d4bf352c23c2");
+export const SAREE_GREEN = U("1679006831648-7c9ea12e5807");
+export const SAREE_PURPLE = U("1641699862936-be9f49b1c38d");
+export const SAREE_RED = U("1610030469983-98e550d6193c");
+export const SAREE_PINK = U("1617627143750-d86bc21e42bb");
+export const KURTA_HALDI = U("1759720883040-af9be070929e");
+export const KURTA_LAL = U("1716655359683-791d415c3f4c");
+export const KURTA_VAN = U("1760162693478-4c96b6c99d55");
+export const GOWN_MIDNIGHT = U("1640745690845-4d6aa890811d");
+export const CASUAL_KURTI = U("1715090826982-a93a7c74e880");
+export const CASUAL_DENIM = U("1542272604-787c3835535d");
+export const CASUAL_TEE = U("1710440189404-e95fabead2a3");
+export const FORMAL_TIE = U("1507679799987-c73779587ccf");
+export const LOOK_FIELD = U("1645856049235-8464376187fa");
+export const LOOK_GRASS = U("1645856048803-51971c462707");
+
+/* ---------------- types ---------------- */
 
 export type Category =
-  | "Outerwear"
-  | "Knitwear"
-  | "Tailoring"
-  | "Shirts"
-  | "Dresses"
-  | "Footwear";
+  | "Sarees"
+  | "Lehengas"
+  | "Kurtas & Sets"
+  | "Indo-Western"
+  | "Casual"
+  | "Official";
 
 export type Product = {
   id: string;
@@ -38,7 +49,7 @@ export type Product = {
   colorway: string;
   img: string;
   filter?: string;
-  badge?: "New" | "Bestseller" | "Low stock" | "Final sale";
+  badge?: "New" | "Bestseller" | "Low stock" | "Festive pick";
   fabric: string;
   details: string;
   sizes: string[];
@@ -49,307 +60,440 @@ export type Product = {
 };
 
 const APPAREL = ["XS", "S", "M", "L", "XL"];
-const SHOES = ["40", "41", "42", "43", "44", "45"];
+const WAIST = ["28", "30", "32", "34", "36"];
+const COAT = ["38", "40", "42", "44"];
 
 export const PRODUCTS: Product[] = [
+  /* ---- SAREES ---- */
   {
-    id: "marlow-charcoal",
-    name: "Marlow Overcoat",
-    category: "Outerwear",
-    price: 420,
-    colorway: "Charcoal",
-    img: P_COAT,
+    id: "banarasi-rani",
+    name: "Banarasi Silk Saree",
+    category: "Sarees",
+    price: 6999,
+    colorway: "Rani Pink",
+    img: SAREE_RED,
     badge: "Bestseller",
-    fabric: "Double-faced virgin wool, horn buttons, cupro lining.",
+    fabric: "Pure Katan silk, real zari border, handwoven in Varanasi.",
     details:
-      "Cut from 640gsm double-faced wool woven in Biella. Fully canvassed, hand-finished lapel, single back vent. Dry clean only.",
-    sizes: APPAREL,
+      "Woven over 21 days on a handloom in Varanasi. Kadiyal border with real silver-zari dipped in gold. Ships with a running blouse piece and the weaver's name on the fall.",
+    sizes: ["Free size"],
     featured: true,
     rating: 4.9,
-    reviews: 132,
+    reviews: 214,
   },
   {
-    id: "belmont-camel",
-    name: "Belmont Overcoat",
-    category: "Outerwear",
-    price: 390,
-    colorway: "Camel",
-    img: P_COAT,
-    filter: "sepia(0.42) hue-rotate(-12deg) saturate(1.1) brightness(1.09)",
+    id: "banarasi-sona",
+    name: "Banarasi Silk Saree",
+    category: "Sarees",
+    price: 7499,
+    colorway: "Sona Gold",
+    img: SONA_TRAD,
     badge: "New",
-    fabric: "Brushed camel wool-cashmere, corozo buttons.",
+    fabric: "Katan silk, meenakari butta, sona-ranga dhaaga.",
     details:
-      "A softer shoulder, patch pockets and a 9% cashmere hand for warmth without weight. Arrives from the loom undyed — the camel is the fibre itself.",
+      "The festive colourway of our Banarasi — sun-gold body with maroon meenakari bootis. A saree that photographs the way it feels: heavy, warm, heirloom.",
+    sizes: ["Free size"],
+    isNew: true,
+    rating: 4.8,
+    reviews: 63,
+  },
+  {
+    id: "kanchi-mehrun",
+    name: "Kanchipuram Saree",
+    category: "Sarees",
+    price: 5999,
+    colorway: "Mehrun Purple",
+    img: SAREE_PURPLE,
+    fabric: "Mulberry silk, korvai border, gold-checked pallu.",
+    details:
+      "Classic korvai technique where the border is woven separately and interlocked — it will never peel away. Blouse piece included.",
+    sizes: ["Free size"],
+    rating: 4.8,
+    reviews: 128,
+  },
+  {
+    id: "chanderi-hara",
+    name: "Chanderi Cotton Saree",
+    category: "Sarees",
+    price: 3499,
+    colorway: "Hara Green",
+    img: SAREE_GREEN,
+    badge: "New",
+    fabric: "Cotton-silk Chanderi, ashrafi butta, feather-light drape.",
+    details:
+      "The office-to-occasion saree. Sheer, weightless Chanderi from Madhya Pradesh that drapes in five minutes and breathes all day.",
+    sizes: ["Free size"],
+    isNew: true,
+    rating: 4.7,
+    reviews: 87,
+  },
+
+  /* ---- LEHENGAS ---- */
+  {
+    id: "meera-maroon",
+    name: "Zardozi Lehenga",
+    category: "Lehengas",
+    price: 12999,
+    colorway: "Maroon",
+    img: LEH_MAROON,
+    badge: "Bestseller",
+    fabric: "Raw silk, hand-worked zardozi, cancan-lined flare.",
+    details:
+      "Six metres of flare with 400 hours of zardozi across the hem. Dupatta with a hand-rolled edge included; choli stitched to your measurements on request.",
+    sizes: ["S", "M", "L", "XL"],
+    featured: true,
+    rating: 4.9,
+    reviews: 176,
+  },
+  {
+    id: "meera-emerald",
+    name: "Zardozi Lehenga",
+    category: "Lehengas",
+    price: 13999,
+    colorway: "Emerald",
+    img: LEH_GREEN,
+    badge: "New",
+    fabric: "Raw silk in emerald, antique-gold zardozi.",
+    details:
+      "The sangeet colourway — emerald that reads green under warm light and teal under white. Mirror-work buttis catch every phera of the dance floor.",
+    sizes: ["S", "M", "L", "XL"],
+    isNew: true,
+    rating: 4.8,
+    reviews: 54,
+  },
+  {
+    id: "aisha-gulabi",
+    name: "Cape Lehenga Set",
+    category: "Lehengas",
+    price: 11499,
+    colorway: "Gulabi",
+    img: LEH_ROSE,
+    fabric: "Georgette lehenga with a sheer embroidered cape.",
+    details:
+      "For the bride who skips the dupatta. A fluid georgette lehenga with a full embroidered cape — grand entrances, free hands.",
+    sizes: ["S", "M", "L"],
+    rating: 4.9,
+    reviews: 92,
+  },
+  {
+    id: "noor-scarlet",
+    name: "Bridal Lehenga",
+    category: "Lehengas",
+    price: 18999,
+    compareAt: 24999,
+    colorway: "Scarlet",
+    img: LEH_BRIDAL,
+    badge: "Low stock",
+    fabric: "Velvet bridal lehenga, dabka & kundan work, double dupatta.",
+    details:
+      "Our atelier bridal piece in scarlet velvet with dabka, kundan and pearl work. Two dupattas — one heavy, one soft. Only a few sizes remain this season.",
+    sizes: ["S", "M", "L"],
+    rating: 5.0,
+    reviews: 41,
+  },
+
+  /* ---- KURTAS & SETS ---- */
+  {
+    id: "chikankari-ivory",
+    name: "Chikankari Kurta Set",
+    category: "Kurtas & Sets",
+    price: 2499,
+    colorway: "Ivory",
+    img: GEN_KURTA,
+    badge: "Festive pick",
+    fabric: "Hand-embroidered Lucknowi chikankari on cotton, straight-cut pyjama.",
+    details:
+      "Shadow-work chikankari done by hand in Lucknow — each kurta carries roughly 18 hours of embroidery. Relaxed straight cut, side pockets, breathable cotton.",
+    sizes: APPAREL,
+    featured: true,
+    rating: 4.8,
+    reviews: 342,
+  },
+  {
+    id: "anarkali-haldi",
+    name: "Anarkali Kurta Set",
+    category: "Kurtas & Sets",
+    price: 3999,
+    colorway: "Haldi",
+    img: KURTA_HALDI,
+    badge: "New",
+    fabric: "Flared anarkali in haldi yellow with gota patti, churidar included.",
+    details:
+      "The haldi-morning anarkali. Gota patti on the yoke, a 24-kali flare that moves when you do, and a matching churidar.",
+    sizes: APPAREL,
+    isNew: true,
+    rating: 4.7,
+    reviews: 98,
+  },
+  {
+    id: "festive-lal",
+    name: "Festive Kurta Set",
+    category: "Kurtas & Sets",
+    price: 4499,
+    colorway: "Lal Red",
+    img: KURTA_LAL,
+    fabric: "Silk-blend kurta with mirror-work dupatta.",
+    details:
+      "Garba-ready and Diwali-proof — a lal-red silk blend with a mirror-work dupatta that does the lighting for you.",
+    sizes: APPAREL,
+    rating: 4.6,
+    reviews: 76,
+  },
+  {
+    id: "heritage-van",
+    name: "Heritage Kurta Set",
+    category: "Kurtas & Sets",
+    price: 3299,
+    colorway: "Van Green",
+    img: KURTA_VAN,
+    badge: "New",
+    fabric: "Block-printed cotton kurta, dabu mud-resist print from Bagru.",
+    details:
+      "Dabu mud-resist block printing from Bagru, Rajasthan — every print is stamped by hand, so no two kurtas repeat exactly.",
     sizes: APPAREL,
     isNew: true,
     rating: 4.8,
-    reviews: 41,
+    reviews: 59,
   },
+
+  /* ---- INDO-WESTERN ---- */
   {
-    id: "hollis-brun",
-    name: "Hollis Leather Jacket",
-    category: "Outerwear",
-    price: 560,
-    colorway: "Brun",
-    img: P_JACKET,
-    badge: "Low stock",
-    fabric: "Full-grain Tuscan leather, vegetable tanned, cotton twill lining.",
+    id: "nehru-indigo",
+    name: "Kurta & Nehru Jacket",
+    category: "Indo-Western",
+    price: 5499,
+    colorway: "Indigo",
+    img: GEN_KURTA,
+    filter: "hue-rotate(12deg) saturate(1.2) brightness(0.94)",
+    badge: "Bestseller",
+    fabric: "Indigo-dyed Nehru jacket over an ivory chikankari kurta.",
     details:
-      "Racer silhouette with a two-way zip and storm cuffs. Tanned with chestnut extract — it darkens and softens with a decade of wear.",
-    sizes: APPAREL,
+      "The wedding-guest uniform. A hand-dyed indigo Nehru jacket that layers over the ivory kurta — formal enough for the mandap, easy enough for the after-party.",
+    sizes: COAT,
     featured: true,
     rating: 4.9,
-    reviews: 87,
+    reviews: 187,
   },
   {
-    id: "ashford-oat",
-    name: "Ashford Rib Knit",
-    category: "Knitwear",
-    price: 180,
-    colorway: "Oat",
-    img: P_KNIT,
-    badge: "New",
-    fabric: "3-ply extrafine merino, fully-fashioned, hand-linked collar.",
+    id: "midnight-gown",
+    name: "Fusion Gown",
+    category: "Indo-Western",
+    price: 7999,
+    colorway: "Midnight",
+    img: GOWN_MIDNIGHT,
+    fabric: "Crepe gown with hand-embroidered bodice, palazzo drape.",
     details:
-      "Knitted whole on 12-gauge frames in Guimarães, then washed in soft water for a broken-in feel from day one.",
+      "An indo-western silhouette with a lehenga's drama — fitted embroidered bodice, fluid midnight crepe, trailing palazzo drape.",
     sizes: APPAREL,
-    featured: true,
-    isNew: true,
     rating: 4.7,
     reviews: 64,
   },
   {
-    id: "ashford-espresso",
-    name: "Ashford Rib Knit",
-    category: "Knitwear",
-    price: 180,
-    colorway: "Espresso",
-    img: P_KNIT,
-    filter: "brightness(0.66) sepia(0.22) saturate(0.95)",
-    fabric: "3-ply extrafine merino, walnut-husk dyed.",
+    id: "nehru-noir",
+    name: "Nehru Jacket",
+    category: "Indo-Western",
+    price: 4999,
+    compareAt: 5999,
+    colorway: "Noir",
+    img: GEN_KURTA,
+    filter: "grayscale(0.92) brightness(0.78) contrast(1.05)",
+    badge: "Low stock",
+    fabric: "Jet-black bandhgala jacket, satin lapel-less collar.",
     details:
-      "The same fully-fashioned rib, dyed with walnut husk for a deep, living espresso that shifts in low light.",
-    sizes: APPAREL,
+      "The noir bandhgala — sharp enough for the boardroom, traditional enough for the baraat. Slim cut with functioning sleeve buttons.",
+    sizes: COAT,
     rating: 4.8,
-    reviews: 52,
+    reviews: 71,
   },
+
+  /* ---- CASUAL ---- */
   {
-    id: "kent-ink",
-    name: "Kent Pleated Trouser",
-    category: "Tailoring",
-    price: 165,
-    colorway: "Ink",
-    img: P_TROUSER,
-    featured: true,
-    fabric: "High-twist wool flannel, single pleat, side adjusters.",
-    details:
-      "A fuller leg that breaks once. High-twist yarn keeps the crease sharp through travel — our most reordered trouser three seasons running.",
-    sizes: APPAREL,
-    rating: 4.8,
-    reviews: 98,
-  },
-  {
-    id: "kent-stone",
-    name: "Kent Pleated Trouser",
-    category: "Tailoring",
-    price: 165,
-    colorway: "Stone",
-    img: P_TROUSER,
-    filter: "brightness(1.38) saturate(0.32)",
+    id: "dilli-kurti",
+    name: "Casual Kurti",
+    category: "Casual",
+    price: 1499,
+    colorway: "Dilli Street",
+    img: CASUAL_KURTI,
     badge: "New",
-    fabric: "High-twist wool flannel in undyed stone.",
+    fabric: "Slub cotton kurti, scooter-proof length, front pockets.",
     details:
-      "Woven from undyed Saxony fleece — the grey-warm stone tone comes from blending natural fibre shades, no dye bath involved.",
+      "The everyday kurti — slub cotton that survives Delhi summers, a length that works on a scooter, and pockets that actually fit a phone.",
     sizes: APPAREL,
     isNew: true,
     rating: 4.6,
-    reviews: 23,
+    reviews: 143,
   },
   {
-    id: "rowan-blanc",
-    name: "Rowan Poplin Shirt",
-    category: "Shirts",
-    price: 140,
-    colorway: "Blanc",
-    img: P_SHIRT,
-    badge: "New",
-    fabric: "120s two-ply Egyptian poplin, mother-of-pearl buttons.",
+    id: "indigo-denim",
+    name: "Slim Denim",
+    category: "Casual",
+    price: 2199,
+    colorway: "Indigo Wash",
+    img: CASUAL_DENIM,
+    fabric: "13.5oz stretch denim, mid-rise slim taper.",
     details:
-      "Sewn with 22 stitches per inch and a single-needle yoke. Cut generous through the body to be worn tucked or open.",
-    sizes: APPAREL,
-    isNew: true,
+      "A mid-rise slim taper in 13.5oz denim with 2% stretch — pairs with tees and kurtas alike. Sanforized so the fit you buy is the fit you keep.",
+    sizes: WAIST,
     rating: 4.7,
-    reviews: 45,
+    reviews: 231,
   },
   {
-    id: "vesper-choc",
-    name: "Vesper Bias Dress",
-    category: "Dresses",
-    price: 310,
-    colorway: "Chocolate",
-    img: P_DRESS,
-    featured: true,
+    id: "ecru-tee",
+    name: "Everyday Tee (Pack of 2)",
+    category: "Casual",
+    price: 999,
+    colorway: "Ecru & Indigo",
+    img: CASUAL_TEE,
+    badge: "New",
+    fabric: "220gsm combed cotton, pre-shrunk, ribbed collar.",
+    details:
+      "Two heavyweight combed-cotton tees — one ecru, one indigo. Pre-shrunk, double-stitched, and thick enough to skip the vest.",
+    sizes: APPAREL,
     isNew: true,
-    fabric: "Sandwashed silk crepe, cut on the true bias.",
-    details:
-      "Cut on the bias so the dress follows rather than fits. French seams throughout; adjustable straps; falls to mid-calf.",
-    sizes: APPAREL,
-    rating: 4.9,
-    reviews: 71,
+    rating: 4.5,
+    reviews: 189,
   },
+
+  /* ---- OFFICIAL ---- */
   {
-    id: "vesper-noir",
-    name: "Vesper Bias Dress",
-    category: "Dresses",
-    price: 248,
-    compareAt: 310,
-    colorway: "Noir",
-    img: P_DRESS,
-    filter: "brightness(0.55) saturate(0.65) hue-rotate(-8deg)",
-    badge: "Final sale",
-    fabric: "Sandwashed silk crepe, cut on the true bias.",
+    id: "navy-blazer",
+    name: "Tailored Blazer",
+    category: "Official",
+    price: 6499,
+    colorway: "Navy",
+    img: GEN_BLAZER,
+    badge: "Bestseller",
+    fabric: "Half-canvassed tropical wool blazer, corozo buttons.",
     details:
-      "The evening colourway of the Vesper, in the last of the noir crepe. Final sale — all sales fund next season's deadstock buy-back.",
-    sizes: APPAREL,
-    rating: 4.8,
-    reviews: 39,
-  },
-  {
-    id: "lennox-tan",
-    name: "Lennox Chelsea Boot",
-    category: "Footwear",
-    price: 290,
-    colorway: "Tan",
-    img: P_BOOT,
+      "A half-canvassed blazer in tropical-weight wool — built for Indian summers and air-conditioned meetings. Slim lapel, double vent, working cuffs.",
+    sizes: COAT,
     featured: true,
-    fabric: "Waxy commando calf, Goodyear welted, natural crepe sole.",
-    details:
-      "Welted in Northampton on our house last — a rounded toe with room for real feet. Resoleable for life at any of our ateliers.",
-    sizes: SHOES,
     rating: 4.9,
+    reviews: 118,
+  },
+  {
+    id: "ivory-shirt",
+    name: "Formal Shirt",
+    category: "Official",
+    price: 1799,
+    colorway: "Ivory",
+    img: FORMAL_TIE,
+    fabric: "Two-ply Giza cotton, cutaway collar, mother-of-pearl buttons.",
+    details:
+      "The interview shirt. Two-ply Egyptian cotton with a cutaway collar that sits right with or without a tie. Wrinkle-resistant finish.",
+    sizes: APPAREL,
+    rating: 4.7,
     reviews: 156,
   },
   {
-    id: "lennox-noir",
-    name: "Lennox Chelsea Boot",
-    category: "Footwear",
-    price: 290,
-    colorway: "Noir",
-    img: P_BOOT,
-    filter: "brightness(0.52) saturate(0.5)",
-    fabric: "Jet-dyed waxy calf, Goodyear welted, crepe sole.",
+    id: "charcoal-trouser",
+    name: "Pleated Trouser",
+    category: "Official",
+    price: 2299,
+    colorway: "Charcoal",
+    img: GEN_BLAZER,
+    filter: "grayscale(0.55) brightness(0.82) sepia(0.12)",
+    fabric: "High-twist wool-blend, single pleat, half-lined.",
     details:
-      "The Lennox in a deep, inked noir — dyed through the crust so scuffs buff back to black, never to grey.",
-    sizes: SHOES,
+      "A single-pleat office trouser in high-twist wool that keeps its crease from the local train to the late meeting. Half-lined for breathability.",
+    sizes: WAIST,
     rating: 4.8,
-    reviews: 118,
+    reviews: 94,
   },
 ];
 
 export const byId = new Map(PRODUCTS.map((p) => [p.id, p]));
 
 export const CATEGORIES: { name: Category; img: string; note: string }[] = [
-  { name: "Outerwear", img: P_COAT, note: "Coats & jackets" },
-  { name: "Knitwear", img: P_KNIT, note: "Hand-loomed merino" },
-  { name: "Tailoring", img: P_TROUSER, note: "Pleats & flannel" },
-  { name: "Shirts", img: P_SHIRT, note: "Poplin & pearl" },
-  { name: "Dresses", img: P_DRESS, note: "Bias-cut silk" },
-  { name: "Footwear", img: P_BOOT, note: "Welted for life" },
+  { name: "Sarees", img: SAREE_PINK, note: "Handloom & Banarasi" },
+  { name: "Lehengas", img: LEH_MAROON, note: "Festive & bridal" },
+  { name: "Kurtas & Sets", img: GEN_KURTA, note: "Chikankari to anarkali" },
+  { name: "Indo-Western", img: GOWN_MIDNIGHT, note: "Fusion dressing" },
+  { name: "Casual", img: CASUAL_KURTI, note: "Kurtis, tees & denim" },
+  { name: "Official", img: GEN_BLAZER, note: "Office & occasions" },
 ];
 
-export const SERVICES = [
-  {
-    name: "Wardrobe consultation",
-    icon: "hanger",
-    dur: "75 min",
-    desc: "A stylist edits, reorders and fills the gaps in what you already own.",
-  },
-  {
-    name: "Made-to-measure",
-    icon: "needle",
-    dur: "2 visits",
-    desc: "Coats, suits and trousers cut to your measurements in-house.",
-  },
-  {
-    name: "Tailoring & alterations",
-    icon: "scissors",
-    dur: "45 min",
-    desc: "Hems, suppression and restoration by our workshop bench.",
-  },
-  {
-    name: "Occasion dressing",
-    icon: "user",
-    dur: "90 min",
-    desc: "Weddings, premieres, interviews — the full look, fitted twice.",
-  },
+export const OCCASIONS: { title: string; note: string; cat: Category; img: string }[] = [
+  { title: "Casual days", note: "Kurtis, tees & denim", cat: "Casual", img: CASUAL_KURTI },
+  { title: "Office hours", note: "Blazers & formal shirts", cat: "Official", img: GEN_BLAZER },
+  { title: "Wedding season", note: "Lehengas that turn rooms", cat: "Lehengas", img: LEH_BRIDAL },
+  { title: "Festive nights", note: "Zari, silk & sparkle", cat: "Sarees", img: SAREE_PINK },
+  { title: "Evening events", note: "Indo-western drama", cat: "Indo-Western", img: GOWN_MIDNIGHT },
 ];
-
-export const STORES = [
-  { city: "Porto", addr: "Rua do Almada 114", hours: "Tue – Sat · 10–19h", flag: true },
-  { city: "Paris", addr: "12 Rue de Sévigné", hours: "Mon – Sat · 11–19h" },
-  { city: "Copenhagen", addr: "Bredgade 8", hours: "Wed – Sun · 11–18h" },
-];
-
-export const TIME_SLOTS = ["10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:30"];
 
 export const PRESS = [
   {
-    quote: "The quietest coats in fashion — and the loudest argument for buying less, better.",
-    source: "La Mode",
-    issue: "Issue 214",
+    quote: "The online store making handloom feel inevitable again — Banarasi zari to boardroom blazers, one cart.",
+    source: "Vogue India",
+    issue: "Festive Issue",
   },
   {
-    quote: "Verso's made-to-measure program is the best-kept secret in European tailoring.",
-    source: "The Sunday Edit",
+    quote: "Vasana's size-exchange promise quietly fixed Indian e-commerce's worst habit.",
+    source: "Femina",
     issue: "Style Desk",
   },
   {
-    quote: "Knitwear you will hand down, priced like something you merely bought.",
-    source: "FORM Magazine",
-    issue: "AW'25 Annual",
+    quote: "Finally — lehengas, kurtas and office formals with the same level of craft and the same 48-hour dispatch.",
+    source: "ELLE India",
+    issue: "AW'25 Edit",
   },
 ];
 
 export const TICKER = [
-  "AW'25 — The Quiet Tailoring is live",
-  "Complimentary shipping over $250",
-  "Private fittings by appointment — Porto · Paris · Copenhagen",
-  "Every fibre traceable to the mill",
-  "Lifetime resoling on all welted footwear",
+  "Festive Edit '25 is live",
+  "Free delivery on orders over ₹1,999",
+  "Cash on Delivery across India",
+  "Easy 7-day returns & free size exchange",
+  "Handloom, direct from the weaver",
+  "Ships in 48 hours from Jaipur",
 ];
 
 export const POLICIES: Record<string, { title: string; body: string[] }> = {
   shipping: {
-    title: "Shipping & Returns",
+    title: "Shipping & Delivery",
     body: [
-      "Orders placed before 14:00 CET leave our Porto warehouse the same day. Standard delivery is complimentary over $250 and arrives in 2–4 working days; express (1–2 days) is $24.",
-      "Returns are open for 30 days in unworn condition with tags attached. Final-sale pieces are marked on the product page and are not returnable — their proceeds fund our deadstock buy-back program.",
+      "Orders placed before 14:00 IST leave our Jaipur warehouse the same day. Delivery is free above ₹1,999; below that, standard shipping is ₹99 (2–5 working days) and express is ₹249 (1–2 working days, metros).",
+      "We deliver to all 27 states and 8 union territories through Delhivery and India Post. Every parcel ships in plastic-free, curbside-recyclable packaging.",
     ],
   },
-  care: {
-    title: "Care Guide",
+  returns: {
+    title: "Returns & Exchanges",
     body: [
-      "Wool and knitwear: air between wears, steam rather than iron, and wash at most twice a season on a cold wool cycle inside a mesh bag.",
-      "Leather: condition twice a year with an uncoloured balm. Welted footwear: rotate pairs and use cedar trees; bring them to any atelier for a complimentary polish.",
+      "Changed your mind? Return any unworn piece with tags within 7 days — we schedule a doorstep pickup and refund to source within 3–5 working days of the reverse scan.",
+      "Size not right? Exchanges are always free: pick the new size at pickup and we ship the replacement the same day the return is scanned.",
     ],
   },
   sizes: {
     title: "Size Guide",
     body: [
-      "Our apparel is cut true to a relaxed European block — when between sizes, take the smaller for knitwear and the larger for outerwear worn over layers.",
-      "Footwear runs true on our house last; those between sizes should size down a half. Every product page notes its own fit tendencies from verified reviews.",
+      "Sarees are free size (5.5 m with running blouse piece). Lehengas run true with a 2-inch alteration allowance built in; cholis can be custom-stitched at checkout.",
+      "Kurtas and shirts are cut to a relaxed Indian block — when between sizes, size down for kurtas and up for blazers. Waist sizes are in inches and true to measure.",
+    ],
+  },
+  care: {
+    title: "Care Guide",
+    body: [
+      "Silk sarees and zardozi lehengas: dry clean only, wrap in muslin, air once a season away from direct sun. Refold along different lines to protect the weave.",
+      "Cotton kurtas and denims: cold machine wash inside-out, line dry in shade. Chikankari is best hand-washed gently — the embroidery repays it.",
     ],
   },
   privacy: {
     title: "Privacy",
     body: [
-      "We store only what an order or appointment needs: your name, contact details and measurements if you choose to share them. Nothing is sold, shared or used for third-party advertising.",
-      "Request an export or deletion of your data at any time by writing to atelier@verso.example — we answer within two working days.",
+      "We store only what an order needs — name, contact, address and size preferences. No data is sold or shared with third-party advertisers.",
+      "UPI IDs used at checkout are processed by the payment gateway and never touch our servers. Write to care@vasana.in for export or deletion within two working days.",
     ],
   },
 };
 
-export const money = (n: number) => `$${n.toLocaleString("en-US")}`;
+export const STATES = [
+  "Andhra Pradesh", "Assam", "Bihar", "Chhattisgarh", "Delhi", "Goa", "Gujarat",
+  "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh",
+  "Maharashtra", "Odisha", "Punjab", "Rajasthan", "Tamil Nadu", "Telangana",
+  "Uttar Pradesh", "Uttarakhand", "West Bengal",
+];
+
+export const money = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 export const ADMIN_USER = "admin";
 export const ADMIN_PASS = "atelier25";

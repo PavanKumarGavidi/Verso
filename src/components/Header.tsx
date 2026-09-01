@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import { TICKER } from "../data/catalog";
+import { CATEGORIES, TICKER } from "../data/catalog";
 import { useStore } from "../lib/store";
 import { Link, navigate } from "../lib/router";
 import { Marquee, Monogram, TickerItem } from "./ui";
-import { IconBag, IconClose, IconHeart, IconKey, IconSearch, IconArrowUR } from "./icons";
+import { IconArrowUR, IconBag, IconHeart, IconKey, IconSearch } from "./icons";
 
 const NAV = [
   { label: "Shop All", to: "/shop" },
-  { label: "Lookbook", to: "/?s=lookbook" },
-  { label: "Atelier", to: "/?s=atelier" },
-  { label: "Fittings", to: "/?s=fittings" },
+  { label: "Festive", to: "/shop?cat=Lehengas" },
+  { label: "Sarees", to: "/shop?cat=Sarees" },
+  { label: "Our Story", to: "/?s=story" },
 ];
 
 function Badge({ n }: { n: number }) {
@@ -46,7 +46,7 @@ export function Header() {
   return (
     <>
       {/* announcement ticker */}
-      <div className="bg-ink text-paper/90 py-2">
+      <div className="bg-ink py-2 text-paper/90">
         <Marquee>
           {TICKER.map((t) => (
             <TickerItem key={t}>{t}</TickerItem>
@@ -55,23 +55,25 @@ export function Header() {
       </div>
 
       <header
-        className={`sticky top-0 z-[60] bg-paper/95 backdrop-blur-sm border-b rule transition-shadow duration-300 ${
+        className={`sticky top-0 z-[60] border-b rule bg-paper/95 backdrop-blur-sm transition-shadow duration-300 ${
           scrolled ? "shadow-[0_10px_30px_-18px_rgba(28,23,18,0.4)]" : ""
         }`}
       >
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 md:px-8">
-          {/* left: burger + nav */}
-          <div className="flex items-center gap-1 flex-1">
+          {/* left: slim burger + nav */}
+          <div className="flex flex-1 items-center gap-1">
             <button
-              className={`${iconBtn} lg:hidden`}
+              className="group relative flex h-9 w-10 items-center justify-center lg:hidden"
               onClick={() => setMenuOpen(true)}
               aria-label="Open menu"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5" fill="none">
-                <path d="M3.5 7h17M3.5 12h11M3.5 17h17" strokeLinecap="round" />
-              </svg>
+              <span className="relative block h-[11px] w-[21px]">
+                <span className="absolute left-0 top-0 h-px w-full bg-ink transition-all duration-300" />
+                <span className="absolute left-0 top-[5px] h-px w-[13px] bg-ink transition-all duration-300 group-hover:w-full" />
+                <span className="absolute left-0 top-[10px] h-px w-full bg-ink transition-all duration-300" />
+              </span>
             </button>
-            <nav className="hidden lg:flex items-center gap-7 pl-1">
+            <nav className="hidden items-center gap-7 pl-1 lg:flex">
               {NAV.map((n) => (
                 <Link
                   key={n.label}
@@ -85,17 +87,17 @@ export function Header() {
           </div>
 
           {/* logo */}
-          <Link to="/" className="shrink-0 text-center leading-none select-none" ariaLabel="Verso Atelier home">
+          <Link to="/" className="shrink-0 select-none text-center leading-none" ariaLabel="Vasana home">
             <span className="block font-display text-[26px] font-semibold italic tracking-tight">
-              Verso
+              Vasana
             </span>
-            <span className="mt-0.5 block text-[8px] font-bold uppercase tracking-[0.5em] text-smoke">
-              Atelier
+            <span className="mt-0.5 block text-[7.5px] font-bold uppercase tracking-[0.42em] text-smoke">
+              Indian wear online
             </span>
           </Link>
 
           {/* right: icons */}
-          <div className="flex items-center justify-end gap-0.5 flex-1">
+          <div className="flex flex-1 items-center justify-end gap-0.5">
             <Link to="/shop" className={`${iconBtn} hidden sm:grid`} ariaLabel="Search the shop">
               <IconSearch size={18} />
             </Link>
@@ -120,67 +122,83 @@ export function Header() {
           menuOpen ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
-        <button
-          className="absolute inset-0 bg-ink/60"
-          onClick={() => setMenuOpen(false)}
-          aria-label="Close menu"
-        />
-        <div
-          className={`absolute inset-y-0 left-0 flex w-[min(21rem,88vw)] flex-col bg-ink text-paper transition-transform duration-500 ease-[cubic-bezier(0.19,0.7,0.22,1)] ${
-            menuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-        >
-          <div className="flex items-center justify-between border-b rule-light p-5">
+        <div className="absolute inset-0 bg-ink text-paper">
+          <div className="flex h-16 items-center justify-between px-4 md:px-8">
             <Monogram className="text-2xl text-paper" />
             <button
               onClick={() => setMenuOpen(false)}
-              className="grid h-9 w-9 place-items-center border rule-light hover:bg-paper/10 transition-colors"
+              className="flex h-10 w-10 items-center justify-center"
               aria-label="Close menu"
             >
-              <IconClose size={16} />
+              <span className="relative block h-[11px] w-[21px]">
+                <span className="absolute left-0 top-[5px] h-px w-full rotate-45 bg-paper" />
+                <span className="absolute left-0 top-[5px] h-px w-full -rotate-45 bg-paper" />
+              </span>
             </button>
           </div>
-          <nav className="flex flex-col p-5 gap-1">
-            {[
-              { label: "Shop All", to: "/shop" },
-              { label: "The Lookbook", to: "/?s=lookbook" },
-              { label: "The Atelier", to: "/?s=atelier" },
-              { label: "Private Fittings", to: "/?s=fittings" },
-              { label: "Saved Pieces", to: "/shop?saved=1" },
-            ].map((n, i) => (
-              <Link
-                key={n.label}
-                to={n.to}
-                onClick={() => setMenuOpen(false)}
-                className="group flex items-center justify-between border-b rule-light py-4"
-              >
-                <span className="font-display text-3xl font-medium italic group-hover:text-gold transition-colors">
-                  {n.label}
-                </span>
-                <span className="text-smoke text-xs tabular-nums">0{i + 1}</span>
-              </Link>
-            ))}
-          </nav>
-          <div className="mt-auto p-5 border-t rule-light space-y-3">
-            <Link
-              to="/admin"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-fog hover:text-paper transition-colors"
-            >
-              <IconKey size={14} /> Staff console
-            </Link>
-            <p className="text-xs text-smoke leading-relaxed">
-              Porto · Paris · Copenhagen
-              <br />
-              atelier@verso.example
-            </p>
+
+          <div className="flex h-[calc(100%-4rem)] flex-col justify-between overflow-y-auto no-bar px-6 pb-8 pt-6 md:px-12">
+            <nav>
+              {NAV.map((n, i) => (
+                <Link
+                  key={n.label}
+                  to={n.to}
+                  onClick={() => setMenuOpen(false)}
+                  className="rise group flex items-center justify-between border-b border-paper/10 py-4"
+                  // stagger via inline animation-delay
+                  {...{ style: { animationDelay: `${i * 60}ms` } }}
+                >
+                  <span className="font-display text-3xl font-medium transition-colors group-hover:text-gold md:text-5xl">
+                    {n.label}
+                  </span>
+                  <IconArrowUR size={20} className="text-smoke transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-gold" />
+                </Link>
+              ))}
+            </nav>
+
+            <div className="mt-8">
+              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-smoke">Departments</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {CATEGORIES.map((c) => (
+                  <Link
+                    key={c.name}
+                    to={`/shop?cat=${c.name}`}
+                    onClick={() => setMenuOpen(false)}
+                    className="border border-paper/25 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.16em] text-fog transition-colors hover:border-gold hover:text-gold"
+                  >
+                    {c.name}
+                  </Link>
+                ))}
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-paper/10 pt-6">
+                <Link
+                  to="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-2 bg-wine px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] text-paper"
+                >
+                  <IconKey size={13} /> Staff console
+                </Link>
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate("/shop?saved=1");
+                  }}
+                  className="link-line grow inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.2em] text-fog"
+                >
+                  <IconHeart size={13} /> Saved ({wishlist.length})
+                </button>
+              </div>
+              <p className="mt-6 text-xs leading-relaxed text-smoke">
+                Jaipur warehouse · ships to all 27 states
+                <br />
+                care@vasana.in · +91 141 400 2016
+              </p>
+            </div>
           </div>
         </div>
       </div>
+
     </>
   );
-}
-
-export function goSection(id: string) {
-  navigate(`/?s=${id}`);
 }

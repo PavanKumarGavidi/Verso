@@ -1,6 +1,6 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { money } from "../data/catalog";
-import { useStore, type ApptStatus, type OrderStatus } from "../lib/store";
+import { useStore, type Order, type OrderStatus } from "../lib/store";
 import { Link } from "../lib/router";
 import { Monogram } from "../components/ui";
 import {
@@ -15,7 +15,6 @@ import {
 } from "../components/icons";
 
 const ORDER_STATUSES: OrderStatus[] = ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"];
-const APPT_STATUSES: ApptStatus[] = ["Requested", "Confirmed", "Completed", "Cancelled"];
 
 const pillCls: Record<string, string> = {
   Pending: "bg-gold/20 text-[#7d5c1c] border-gold/50",
@@ -23,17 +22,12 @@ const pillCls: Record<string, string> = {
   Shipped: "bg-ink/10 text-ink border-ink/30",
   Delivered: "bg-moss text-paper border-moss",
   Cancelled: "bg-rouge/15 text-wine border-rouge/50",
-  Requested: "bg-gold/20 text-[#7d5c1c] border-gold/50",
-  Completed: "bg-ink text-paper border-ink",
 };
 
 const fmtDate = (isoStr: string) =>
-  new Date(isoStr).toLocaleDateString("en-US", { month: "short", day: "numeric" }) +
+  new Date(isoStr).toLocaleDateString("en-IN", { day: "numeric", month: "short" }) +
   " · " +
-  new Date(isoStr).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false });
-
-const fmtDay = (isoStr: string) =>
-  new Date(isoStr + "T12:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  new Date(isoStr).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: false });
 
 /* ============================ LOGIN ============================ */
 
@@ -68,10 +62,13 @@ function Login() {
         </div>
         <p className="mt-6 text-[10px] font-bold uppercase tracking-[0.24em] text-wine">Staff console — restricted</p>
         <h1 className="mt-2 font-display text-4xl font-medium leading-tight">
-          Orders &amp;<br /><em className="text-wine">bookings.</em>
+          Every order,
+          <br />
+          <em className="text-wine">end to end.</em>
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-ink/70">
-          Sign in to review every order and private-fitting request, update statuses and watch the day’s takings.
+          Sign in to review each order placed on the store — confirm it, ship it, mark it delivered
+          or cancel, and watch the day’s takings move.
         </p>
 
         <form onSubmit={submit} className="mt-7 space-y-4" noValidate>
@@ -125,8 +122,7 @@ function Login() {
 /* ============================ DASHBOARD ============================ */
 
 function Dashboard() {
-  const { orders, appointments, setOrderStatus, setApptStatus, logout, resetDemo, toast, isAdmin } = useStore();
-  const [tab, setTab] = useState<"orders" | "bookings">("orders");
+  const { orders, setOrderStatus, logout, resetDemo, toast, isAdmin } = useStore();
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -135,7 +131,7 @@ function Dashboard() {
   const active = orders.filter((o) => o.status !== "Cancelled");
   const revenue = active.reduce((s, o) => s + o.total, 0);
   const pending = orders.filter((o) => o.status === "Pending").length;
-  const upcoming = appointments.filter((a) => a.status === "Requested" || a.status === "Confirmed").length;
+  const delivered = orders.filter((o) => o.status === "Delivered").length;
   const aov = active.length ? Math.round(revenue / active.length) : 0;
 
   const week = useMemo(() => {
@@ -145,7 +141,7 @@ function Dashboard() {
       const key = d.toISOString().slice(0, 10);
       const dayOrders = orders.filter((o) => o.status !== "Cancelled" && o.createdAt.slice(0, 10) === key);
       days.push({
-        label: d.toLocaleDateString("en-US", { weekday: "short" }),
+        label: d.toLocaleDateString("en-IN", { weekday: "short" }),
         total: dayOrders.reduce((s, o) => s + o.total, 0),
         count: dayOrders.length,
       });
@@ -168,31 +164,10 @@ function Dashboard() {
     });
   }, [orders, q, statusFilter]);
 
-  const filteredAppts = useMemo(() => {
-    const needle = q.trim().toLowerCase();
-    return appointments.filter((a) => {
-      if (statusFilter !== "All" && a.status !== statusFilter) return false;
-      if (!needle) return true;
-      return (
-        a.id.toLowerCase().includes(needle) ||
-        a.name.toLowerCase().includes(needle) ||
-        a.service.toLowerCase().includes(needle) ||
-        a.store.toLowerCase().includes(needle)
-      );
-    });
-  }, [appointments, q, statusFilter]);
-
-  const switchTab = (t: "orders" | "bookings") => {
-    setTab(t);
-    setStatusFilter("All");
-    setQ("");
-    setExpanded(null);
-  };
-
   const stats = [
     { label: "Gross revenue", value: money(revenue), sub: `${active.length} paid orders`, icon: <IconBag size={17} /> },
     { label: "Orders", value: String(orders.length), sub: `${pending} awaiting confirmation`, icon: <IconCheck size={17} /> },
-    { label: "Bookings", value: String(appointments.length), sub: `${upcoming} upcoming fittings`, icon: <IconCal size={17} /> },
+    { label: "Delivered", value: String(delivered), sub: "this trailing week", icon: <IconCal size={17} /> },
     { label: "Avg. order", value: money(aov), sub: "excluding cancelled", icon: <IconSearch size={17} /> },
   ];
 
@@ -233,7 +208,7 @@ function Dashboard() {
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-wine">The day book</p>
             <h1 className="mt-2 font-display text-4xl font-medium tracking-tight md:text-5xl">
-              {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+              {new Date().toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long" })}
             </h1>
           </div>
           <button
@@ -253,7 +228,7 @@ function Dashboard() {
         {/* stats */}
         <div className="mt-8 grid grid-cols-2 gap-px border rule bg-ink/10 lg:grid-cols-4">
           {stats.map((s) => (
-            <div key={s.label} className="group bg-paper p-5 transition-colors hover:bg-bone/50 md:p-6">
+            <div key={s.label} className="bg-paper p-5 transition-colors hover:bg-bone/50 md:p-6">
               <div className="flex items-center justify-between text-smoke">
                 <span className="text-[10px] font-bold uppercase tracking-[0.2em]">{s.label}</span>
                 <span className="text-gold">{s.icon}</span>
@@ -277,7 +252,7 @@ function Dashboard() {
                   {money(d.total)} · {d.count} ord.
                 </span>
                 <div
-                  className={`w-full transition-all duration-500 ${d.total > 0 ? "bg-wine group-hover:bg-ink" : "bg-ink/10"} `}
+                  className={`w-full transition-all duration-500 ${d.total > 0 ? "bg-wine group-hover:bg-ink" : "bg-ink/10"}`}
                   style={{ height: d.total > 0 ? `${Math.max(6, (d.total / maxDay) * 100)}%` : "4px" }}
                 />
                 <span className="mt-2 text-center text-[10px] font-bold uppercase tracking-[0.14em] text-smoke">{d.label}</span>
@@ -286,29 +261,13 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* tabs + filters */}
+        {/* filters */}
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <div className="flex border rule">
-            <button
-              onClick={() => switchTab("orders")}
-              className={`flex items-center gap-2 px-5 py-3 text-[11px] font-bold uppercase tracking-[0.18em] transition-colors ${
-                tab === "orders" ? "bg-ink text-paper" : "text-smoke hover:text-ink"
-              }`}
-              aria-pressed={tab === "orders"}
-            >
-              <IconBag size={14} /> Orders
-              <span className={`tabular-nums ${tab === "orders" ? "text-gold" : "text-wine"}`}>{orders.length}</span>
-            </button>
-            <button
-              onClick={() => switchTab("bookings")}
-              className={`flex items-center gap-2 px-5 py-3 text-[11px] font-bold uppercase tracking-[0.18em] transition-colors ${
-                tab === "bookings" ? "bg-ink text-paper" : "text-smoke hover:text-ink"
-              }`}
-              aria-pressed={tab === "bookings"}
-            >
-              <IconCal size={14} /> Bookings
-              <span className={`tabular-nums ${tab === "bookings" ? "text-gold" : "text-wine"}`}>{appointments.length}</span>
-            </button>
+          <div className="flex items-center gap-2.5 border rule bg-ink px-5 py-3 text-paper">
+            <IconBag size={15} className="text-gold" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.18em]">
+              All orders <span className="text-gold tabular-nums">{orders.length}</span>
+            </span>
           </div>
 
           <div className="relative min-w-[180px] flex-1 sm:max-w-xs">
@@ -316,14 +275,14 @@ function Dashboard() {
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              placeholder={tab === "orders" ? "Search id, name, city…" : "Search id, name, service…"}
+              placeholder="Search id, name, city…"
               className="field py-2.5 pl-9 text-[13px]"
-              aria-label="Search records"
+              aria-label="Search orders"
             />
           </div>
 
           <div className="no-bar flex items-center gap-1.5 overflow-x-auto">
-            {["All", ...(tab === "orders" ? ORDER_STATUSES : APPT_STATUSES)].map((s) => (
+            {["All", ...ORDER_STATUSES].map((s) => (
               <button
                 key={s}
                 onClick={() => setStatusFilter(s)}
@@ -338,96 +297,63 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* ---------- ORDERS ---------- */}
-        {tab === "orders" && (
-          <div className="mt-5">
-            {filteredOrders.length === 0 ? (
-              <EmptyNote text="No orders match that filter." />
-            ) : (
-              <div className="border rule bg-paper">
-                {/* desktop table */}
-                <div className="hidden md:block overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b rule bg-bone/50 text-left text-[10px] uppercase tracking-[0.18em] text-smoke">
-                        <th className="px-4 py-3 font-bold">Order</th>
-                        <th className="px-4 py-3 font-bold">Placed</th>
-                        <th className="px-4 py-3 font-bold">Customer</th>
-                        <th className="px-4 py-3 font-bold">Pieces</th>
-                        <th className="px-4 py-3 font-bold text-right">Total</th>
-                        <th className="px-4 py-3 font-bold">Payment</th>
-                        <th className="px-4 py-3 font-bold">Status</th>
-                        <th className="w-10" />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredOrders.map((o) => (
-                        <OrderRows key={o.id} o={o} expanded={expanded === o.id} onToggle={() => setExpanded(expanded === o.id ? null : o.id)} onStatus={(s) => { setOrderStatus(o.id, s); toast(`${o.id} → ${s}`, undefined, s === "Cancelled" ? "warn" : "ok"); }} />
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {/* mobile cards */}
-                <ul className="divide-y divide-ink/10 md:hidden">
-                  {filteredOrders.map((o) => (
-                    <OrderCard key={o.id} o={o} expanded={expanded === o.id} onToggle={() => setExpanded(expanded === o.id ? null : o.id)} onStatus={(s) => { setOrderStatus(o.id, s); toast(`${o.id} → ${s}`, undefined, s === "Cancelled" ? "warn" : "ok"); }} />
-                  ))}
-                </ul>
+        {/* orders table */}
+        <div className="mt-5">
+          {filteredOrders.length === 0 ? (
+            <div className="flex flex-col items-center gap-3 border rule bg-paper py-16 text-center">
+              <IconSearch size={24} className="text-smoke" />
+              <p className="font-display text-xl italic">No orders match that filter.</p>
+            </div>
+          ) : (
+            <div className="border rule bg-paper">
+              {/* desktop table */}
+              <div className="hidden overflow-x-auto md:block">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b rule bg-bone/50 text-left text-[10px] uppercase tracking-[0.18em] text-smoke">
+                      <th className="px-4 py-3 font-bold">Order</th>
+                      <th className="px-4 py-3 font-bold">Placed</th>
+                      <th className="px-4 py-3 font-bold">Customer</th>
+                      <th className="px-4 py-3 font-bold">Pieces</th>
+                      <th className="px-4 py-3 text-right font-bold">Total</th>
+                      <th className="px-4 py-3 font-bold">Payment</th>
+                      <th className="px-4 py-3 font-bold">Status</th>
+                      <th className="w-10" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredOrders.map((o) => (
+                      <OrderRows
+                        key={o.id}
+                        o={o}
+                        expanded={expanded === o.id}
+                        onToggle={() => setExpanded(expanded === o.id ? null : o.id)}
+                        onStatus={(s) => { setOrderStatus(o.id, s); toast(`${o.id} → ${s}`, undefined, s === "Cancelled" ? "warn" : "ok"); }}
+                      />
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            )}
-          </div>
-        )}
-
-        {/* ---------- BOOKINGS ---------- */}
-        {tab === "bookings" && (
-          <div className="mt-5">
-            {filteredAppts.length === 0 ? (
-              <EmptyNote text="No bookings match that filter." />
-            ) : (
-              <div className="border rule bg-paper">
-                <div className="hidden md:block overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b rule bg-bone/50 text-left text-[10px] uppercase tracking-[0.18em] text-smoke">
-                        <th className="px-4 py-3 font-bold">Ref</th>
-                        <th className="px-4 py-3 font-bold">Requested</th>
-                        <th className="px-4 py-3 font-bold">Client</th>
-                        <th className="px-4 py-3 font-bold">Service</th>
-                        <th className="px-4 py-3 font-bold">Atelier</th>
-                        <th className="px-4 py-3 font-bold">Visit</th>
-                        <th className="px-4 py-3 font-bold">Status</th>
-                        <th className="w-10" />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredAppts.map((a) => (
-                        <ApptRows key={a.id} a={a} expanded={expanded === a.id} onToggle={() => setExpanded(expanded === a.id ? null : a.id)} onStatus={(s) => { setApptStatus(a.id, s); toast(`${a.id} → ${s}`, undefined, s === "Cancelled" ? "warn" : "ok"); }} />
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                <ul className="divide-y divide-ink/10 md:hidden">
-                  {filteredAppts.map((a) => (
-                    <ApptCard key={a.id} a={a} expanded={expanded === a.id} onToggle={() => setExpanded(expanded === a.id ? null : a.id)} onStatus={(s) => { setApptStatus(a.id, s); toast(`${a.id} → ${s}`, undefined, s === "Cancelled" ? "warn" : "ok"); }} />
-                  ))}
-                </ul>
-              </div>
-            )}
-            <p className="mt-4 text-xs text-smoke">
-              Bookings arrive from the “Private fittings” form on the storefront. Confirm within a day — clients are emailed automatically (in this demo, politely imagined).
-            </p>
-          </div>
-        )}
+              {/* mobile cards */}
+              <ul className="divide-y divide-ink/10 md:hidden">
+                {filteredOrders.map((o) => (
+                  <OrderCard
+                    key={o.id}
+                    o={o}
+                    expanded={expanded === o.id}
+                    onToggle={() => setExpanded(expanded === o.id ? null : o.id)}
+                    onStatus={(s) => { setOrderStatus(o.id, s); toast(`${o.id} → ${s}`, undefined, s === "Cancelled" ? "warn" : "ok"); }}
+                  />
+                ))}
+              </ul>
+            </div>
+          )}
+          <p className="mt-4 text-xs text-smoke">
+            Orders arrive live from the storefront checkout — UPI, card and cash-on-delivery. Status
+            changes are saved and sync back to the demo data on restore.
+          </p>
+        </div>
       </main>
-    </div>
-  );
-}
-
-function EmptyNote({ text }: { text: string }) {
-  return (
-    <div className="flex flex-col items-center gap-3 border rule bg-paper py-16 text-center">
-      <IconSearch size={24} className="text-smoke" />
-      <p className="font-display text-xl italic">{text}</p>
     </div>
   );
 }
@@ -440,15 +366,15 @@ function StatusPill({ s }: { s: string }) {
   );
 }
 
-function StatusSelect({ value, options, onChange }: { value: string; options: string[]; onChange: (s: string) => void }) {
+function StatusSelect({ value, onChange }: { value: OrderStatus; onChange: (s: OrderStatus) => void }) {
   return (
     <select
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(e) => onChange(e.target.value as OrderStatus)}
       className={`cursor-pointer border px-2 py-1.5 text-[11px] font-bold uppercase tracking-[0.1em] transition-colors ${pillCls[value] ?? ""}`}
       aria-label="Change status"
     >
-      {options.map((s) => (
+      {ORDER_STATUSES.map((s) => (
         <option key={s} value={s}>{s}</option>
       ))}
     </select>
@@ -461,13 +387,12 @@ const chevronBtn = (open: boolean) => (
   </span>
 );
 
-/* order table rows (desktop) */
-function OrderRows({ o, expanded, onToggle, onStatus }: { o: import("../lib/store").Order; expanded: boolean; onToggle: () => void; onStatus: (s: OrderStatus) => void }) {
+function OrderRows({ o, expanded, onToggle, onStatus }: { o: Order; expanded: boolean; onToggle: () => void; onStatus: (s: OrderStatus) => void }) {
   return (
     <>
       <tr className="cursor-pointer border-b rule transition-colors hover:bg-bone/40" onClick={onToggle}>
         <td className="px-4 py-3.5 font-mono text-xs font-bold">{o.id}</td>
-        <td className="px-4 py-3.5 text-xs text-smoke whitespace-nowrap">{fmtDate(o.createdAt)}</td>
+        <td className="whitespace-nowrap px-4 py-3.5 text-xs text-smoke">{fmtDate(o.createdAt)}</td>
         <td className="px-4 py-3.5">
           <span className="font-semibold">{o.customer.name}</span>
           <span className="block text-[11px] text-smoke">{o.customer.city}, {o.customer.country}</span>
@@ -476,7 +401,7 @@ function OrderRows({ o, expanded, onToggle, onStatus }: { o: import("../lib/stor
         <td className="px-4 py-3.5 text-right font-semibold tabular-nums">{money(o.total)}</td>
         <td className="px-4 py-3.5 text-xs text-smoke">{o.payment}</td>
         <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
-          <StatusSelect value={o.status} options={ORDER_STATUSES} onChange={(s) => onStatus(s as OrderStatus)} />
+          <StatusSelect value={o.status} onChange={onStatus} />
         </td>
         <td className="px-2 py-3.5">{chevronBtn(expanded)}</td>
       </tr>
@@ -492,7 +417,7 @@ function OrderRows({ o, expanded, onToggle, onStatus }: { o: import("../lib/stor
                     <span className="tabular-nums">{money(i.price * i.qty)}</span>
                   </li>
                 ))}
-                <li className="flex justify-between border-t rule pt-1.5 text-smoke text-xs">
+                <li className="flex justify-between border-t rule pt-1.5 text-xs text-smoke">
                   <span>Shipping ({o.shippingMethod})</span><span className="tabular-nums">{o.shipping === 0 ? "Free" : money(o.shipping)}</span>
                 </li>
               </ul>
@@ -510,7 +435,7 @@ function OrderRows({ o, expanded, onToggle, onStatus }: { o: import("../lib/stor
   );
 }
 
-function OrderCard({ o, expanded, onToggle, onStatus }: { o: import("../lib/store").Order; expanded: boolean; onToggle: () => void; onStatus: (s: OrderStatus) => void }) {
+function OrderCard({ o, expanded, onToggle, onStatus }: { o: Order; expanded: boolean; onToggle: () => void; onStatus: (s: OrderStatus) => void }) {
   return (
     <li className="p-4">
       <button className="flex w-full items-center justify-between gap-3 text-left" onClick={onToggle} aria-expanded={expanded}>
@@ -536,59 +461,7 @@ function OrderCard({ o, expanded, onToggle, onStatus }: { o: import("../lib/stor
           </ul>
           <p className="mt-2 text-xs text-smoke">{o.customer.address}, {o.customer.zip} {o.customer.city} · {o.customer.phone}</p>
           <div className="mt-3">
-            <StatusSelect value={o.status} options={ORDER_STATUSES} onChange={(s) => onStatus(s as OrderStatus)} />
-          </div>
-        </div>
-      </div>
-    </li>
-  );
-}
-
-/* appointment rows */
-function ApptRows({ a, expanded, onToggle, onStatus }: { a: import("../lib/store").Appointment; expanded: boolean; onToggle: () => void; onStatus: (s: ApptStatus) => void }) {
-  return (
-    <>
-      <tr className="cursor-pointer border-b rule transition-colors hover:bg-bone/40" onClick={onToggle}>
-        <td className="px-4 py-3.5 font-mono text-xs font-bold">{a.id}</td>
-        <td className="px-4 py-3.5 text-xs text-smoke whitespace-nowrap">{fmtDate(a.createdAt)}</td>
-        <td className="px-4 py-3.5 font-semibold">{a.name}</td>
-        <td className="px-4 py-3.5 text-xs">{a.service}</td>
-        <td className="px-4 py-3.5 text-xs">{a.store}</td>
-        <td className="px-4 py-3.5 text-xs whitespace-nowrap">{fmtDay(a.visitDate)} · {a.visitTime}</td>
-        <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
-          <StatusSelect value={a.status} options={APPT_STATUSES} onChange={(s) => onStatus(s as ApptStatus)} />
-        </td>
-        <td className="px-2 py-3.5">{chevronBtn(expanded)}</td>
-      </tr>
-      <tr className={`border-b rule bg-bone/30 ${expanded ? "" : "hidden"}`}>
-        <td colSpan={8} className="px-4 py-4">
-          <p className="text-sm">{a.email} · {a.phone || "no phone given"}</p>
-          {a.notes && <p className="mt-2 border-l-2 border-gold pl-3 text-sm italic text-ink/70">“{a.notes}”</p>}
-          {!a.notes && <p className="mt-2 text-xs text-smoke">No preparation notes from the client.</p>}
-        </td>
-      </tr>
-    </>
-  );
-}
-
-function ApptCard({ a, expanded, onToggle, onStatus }: { a: import("../lib/store").Appointment; expanded: boolean; onToggle: () => void; onStatus: (s: ApptStatus) => void }) {
-  return (
-    <li className="p-4">
-      <button className="flex w-full items-center justify-between gap-3 text-left" onClick={onToggle} aria-expanded={expanded}>
-        <div>
-          <p className="font-mono text-xs font-bold">{a.id}</p>
-          <p className="mt-1 font-display text-lg leading-tight">{a.name}</p>
-          <p className="text-[11px] text-smoke">{a.service} — {a.store}</p>
-          <p className="mt-0.5 text-[11px] font-semibold text-wine">{fmtDay(a.visitDate)} · {a.visitTime}</p>
-        </div>
-        <StatusPill s={a.status} />
-      </button>
-      <div className={`grid transition-all duration-300 ${expanded ? "mt-3 grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
-        <div className="overflow-hidden">
-          <p className="text-xs text-smoke">{a.email} · {a.phone || "no phone"}</p>
-          {a.notes && <p className="mt-2 border-l-2 border-gold pl-3 text-xs italic">“{a.notes}”</p>}
-          <div className="mt-3">
-            <StatusSelect value={a.status} options={APPT_STATUSES} onChange={(s) => onStatus(s as ApptStatus)} />
+            <StatusSelect value={o.status} onChange={onStatus} />
           </div>
         </div>
       </div>

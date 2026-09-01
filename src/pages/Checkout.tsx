@@ -1,127 +1,206 @@
 import { useState, type FormEvent, type InputHTMLAttributes } from "react";
-import { byId, money } from "../data/catalog";
+import { STATES, byId, money } from "../data/catalog";
 import { FREE_SHIP_AT, useStore, type Order } from "../lib/store";
-import { Link } from "../lib/router";
-import { IconArrowR, IconCheck, IconHanger, IconKey } from "../components/icons";
-
-const COUNTRIES = ["Portugal", "France", "United Kingdom", "Germany", "Spain", "Italy", "Sweden", "Denmark", "Netherlands", "United States", "Mexico", "India", "Other"];
+import { Link, navigate } from "../lib/router";
+import { Stepper } from "../components/ui";
+import {
+  IconArrowR,
+  IconBag,
+  IconCal,
+  IconCheck,
+  IconKey,
+  IconLeaf,
+  IconPhone,
+} from "../components/icons";
 
 type Form = {
-  name: string; email: string; phone: string;
-  address: string; city: string; zip: string; country: string; notes: string;
-  cardName: string; cardNumber: string; expiry: string; cvc: string;
+  name: string;
+  phone: string;
+  email: string;
+  address: string;
+  city: string;
+  state: string;
+  zip: string;
+  notes: string;
+  cardNo: string;
+  cardExp: string;
+  cardCvc: string;
+  upiId: string;
 };
 
-const EMPTY: Form = { name: "", email: "", phone: "", address: "", city: "", zip: "", country: "Portugal", notes: "", cardName: "", cardNumber: "", expiry: "", cvc: "" };
+const initial: Form = {
+  name: "",
+  phone: "",
+  email: "",
+  address: "",
+  city: "",
+  state: "",
+  zip: "",
+  notes: "",
+  cardNo: "",
+  cardExp: "",
+  cardCvc: "",
+  upiId: "",
+};
+
+type Pay = "UPI" | "Card" | "Cash on delivery";
+type ShipMethod = "Standard" | "Express";
 
 export function Checkout() {
-  const { cart, cartSubtotal, placeOrder, toast } = useStore();
-  const [form, setForm] = useState<Form>(EMPTY);
+  const { cart, cartSubtotal, setQty, placeOrder, toast } = useStore();
+  const [form, setForm] = useState<Form>(initial);
+  const [pay, setPay] = useState<Pay>("UPI");
+  const [ship, setShip] = useState<ShipMethod>("Standard");
   const [errors, setErrors] = useState<Partial<Record<keyof Form, string>>>({});
-  const [shipMethod, setShipMethod] = useState<"Standard" | "Express">("Standard");
-  const [payment, setPayment] = useState<"Card" | "Cash on delivery">("Card");
   const [placing, setPlacing] = useState(false);
   const [placed, setPlaced] = useState<Order | null>(null);
 
-  const shipping = shipMethod === "Express" ? 24 : cartSubtotal >= FREE_SHIP_AT ? 0 : 12;
-  const total = cartSubtotal + shipping;
+  const shipping = cartSubtotal >= FREE_SHIP_AT || cart.length === 0 ? 0 : ship === "Express" ? 249 : 99;
+  const expressFee = ship === "Express" && cartSubtotal >= FREE_SHIP_AT ? 249 : ship === "Express" ? 0 : 0;
+  const shipCost = cartSubtotal >= FREE_SHIP_AT && ship === "Standard" ? 0 : ship === "Express" ? 249 : cartSubtotal > 0 ? 99 : 0;
+  void shipping;
+  void expressFee;
 
-  const set = (k: keyof Form) => (v: string) => {
+  const set = (k: keyof Form) => (e: { target: { value: string } }) => {
+    let v = e.target.value;
+    if (k === "phone") v = v.replace(/[^\d ]/g, "").slice(0, 12);
+    if (k === "zip") v = v.replace(/\D/g, "").slice(0, 6);
+    if (k === "cardNo")
+      v = v.replace(/\D/g, "").slice(0, 16).replace(/(\d{4})(?=\d)/g, "$1 ");
+    if (k === "cardExp") {
+      v = v.replace(/\D/g, "").slice(0, 4);
+      if (v.length > 2) v = v.slice(0, 2) + " / " + v.slice(2);
+    }
+    if (k === "cardCvc") v = v.replace(/\D/g, "").slice(0, 3);
     setForm((f) => ({ ...f, [k]: v }));
-    setErrors((e) => ({ ...e, [k]: undefined }));
+    setErrors((er) => ({ ...er, [k]: undefined }));
+  };
+
+  const validate = (): boolean => {
+    const er: Partial<Record<keyof Form, string>> = {};
+    if (form.name.trim().length < 2) er.name = "Your full name, please";
+    if (!/^[6-9]\d{9}$/.test(form.phone.replace(/\s/g, ""))) er.phone = "Enter a valid 10-digit Indian mobile";
+    if (!/^\S+@\S+\.\S+$/.test(form.email)) er.email = "Enter a valid email";
+    if (form.address.trim().length < 6) er.address = "House / flat, street, locality";
+    if (!form.city.trim()) er.city = "City is required";
+    if (!form.state) er.state = "Pick your state";
+    if (!/^\d{6}$/.test(form.zip)) er.zip = "6-digit PIN code";
+    if (pay === "Card") {
+      if (form.cardNo.replace(/\s/g, "").length !== 16) er.cardNo = "16-digit card number";
+      if (!/^(0[1-9]|1[0-2]) \/ \d{2}$/.test(form.cardExp)) er.cardExp = "MM / YY";
+      if (form.cardCvc.length !== 3) er.cardCvc = "3 digits";
+    }
+    if (pay === "UPI" && !/^[\w.\-]{2,}@[a-zA-Z]{2,}$/.test(form.upiId))
+      er.upiId = "e.g. name@okhdfc";
+    setErrors(er);
+    return Object.keys(er).length === 0;
   };
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
-    const errs: Partial<Record<keyof Form, string>> = {};
-    if (form.name.trim().length < 2) errs.name = "Who is this order for?";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = "We need a valid email for the receipt.";
-    if (form.phone.trim().replace(/\D/g, "").length < 7) errs.phone = "A reachable phone number, please.";
-    if (form.address.trim().length < 5) errs.address = "Street and number.";
-    if (!form.city.trim()) errs.city = "City is required.";
-    if (!form.zip.trim()) errs.zip = "Postcode is required.";
-    if (payment === "Card") {
-      if (form.cardName.trim().length < 2) errs.cardName = "Name on card.";
-      if (form.cardNumber.replace(/\s/g, "").length !== 16) errs.cardNumber = "16 digits.";
-      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(form.expiry)) errs.expiry = "MM/YY";
-      if (!/^\d{3,4}$/.test(form.cvc)) errs.cvc = "3–4 digits";
-    }
-    setErrors(errs);
-    if (Object.keys(errs).length > 0) {
-      toast("Almost there", "A few fields need attention before we can place the order.", "warn");
+    if (cart.length === 0) return;
+    if (!validate()) {
+      toast("Almost there", "A few fields need attention before we pack your order.", "err");
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
-
     setPlacing(true);
     window.setTimeout(() => {
       const order = placeOrder(
         {
           name: form.name.trim(),
           email: form.email.trim(),
-          phone: form.phone.trim(),
+          phone: `+91 ${form.phone.replace(/\s/g, "")}`,
           address: form.address.trim(),
           city: form.city.trim(),
-          zip: form.zip.trim(),
-          country: form.country,
+          zip: form.zip,
+          country: `${form.state}, India`,
           notes: form.notes.trim() || undefined,
         },
-        payment,
-        shipMethod,
-        shipping
+        pay,
+        ship,
+        shipCost
       );
-      setPlacing(false);
       setPlaced(order);
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      toast("Order placed", `${order.id} — thank you, ${order.customer.name.split(" ")[0]}.`, "ok");
-    }, 900);
+      setPlacing(false);
+      toast(`Order ${order.id} placed`, "Confirmation sent to your email & phone.", "ok");
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }, 1400);
   };
 
   /* ---------- success ---------- */
   if (placed) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16 md:px-8 md:py-24">
-        <div className="rise border rule bg-bone/40 p-7 md:p-12">
-          <div className="flex items-center gap-4">
-            <span className="grid h-14 w-14 shrink-0 place-items-center border-2 border-moss text-moss"><IconCheck size={26} /></span>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-wine">Order confirmed</p>
-              <h1 className="font-display text-3xl font-medium md:text-5xl">{placed.id}</h1>
-            </div>
-          </div>
-          <p className="mt-5 max-w-xl text-sm leading-relaxed text-ink/75">
-            Thank you, {placed.customer.name.split(" ")[0]}. Your pieces are being pressed and paper-wrapped
-            in Porto. A receipt is on its way to <strong>{placed.customer.email}</strong> — our team confirms
-            within a few hours ({placed.status.toLowerCase()} right now).
+      <div className="mx-auto max-w-2xl px-4 py-16 md:py-24">
+        <div className="rise text-center">
+          <span className="mx-auto grid h-16 w-16 place-items-center bg-moss text-paper">
+            <IconCheck size={28} />
+          </span>
+          <p className="mt-6 text-[11px] font-bold uppercase tracking-[0.26em] text-wine">
+            Order {placed.id} · {new Date(placed.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "long" })}
           </p>
-          <div className="mt-8 grid gap-px border rule bg-ink/10 md:grid-cols-2">
-            <div className="bg-paper p-5">
-              <p className="flabel">Deliver to</p>
-              <p className="text-sm font-semibold">{placed.customer.name}</p>
-              <p className="text-sm text-ink/70">{placed.customer.address}</p>
-              <p className="text-sm text-ink/70">{placed.customer.zip} {placed.customer.city}, {placed.customer.country}</p>
-            </div>
-            <div className="bg-paper p-5">
-              <p className="flabel">Summary</p>
-              <ul className="space-y-1.5 text-sm">
-                {placed.items.map((i) => (
-                  <li key={`${i.productId}-${i.size}`} className="flex justify-between gap-3">
-                    <span className="text-ink/80">{i.qty} × {i.name} <span className="text-smoke">({i.colorway}, {i.size})</span></span>
-                    <span className="tabular-nums">{money(i.price * i.qty)}</span>
-                  </li>
-                ))}
-                <li className="flex justify-between border-t rule pt-1.5 text-smoke"><span>Shipping — {placed.shippingMethod}</span><span className="tabular-nums">{placed.shipping === 0 ? "Free" : money(placed.shipping)}</span></li>
-                <li className="flex justify-between font-semibold"><span>Total — {placed.payment}</span><span className="tabular-nums">{money(placed.total)}</span></li>
-              </ul>
-            </div>
+          <h1 className="mt-3 font-display text-4xl font-medium tracking-tight md:text-6xl">
+            Dhanyavaad, <em className="italic text-wine">{placed.customer.name.split(" ")[0]}.</em>
+          </h1>
+          <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-ink/70">
+            Your parcel leaves our Jaipur warehouse within 48 hours on{" "}
+            <strong>{placed.shippingMethod}</strong> delivery
+            {placed.payment === "Cash on delivery" && (
+              <> — keep <strong>{money(placed.total)}</strong> ready for the delivery partner</>
+            )}
+            {placed.payment === "UPI" && <> — payment received via UPI</>}
+            {placed.payment === "Card" && <> — your card has been charged</>}
+            . Track updates will arrive by SMS &amp; email.
+          </p>
+        </div>
+
+        <div className="pop mt-10 border rule bg-paper" style={{ animationDelay: "120ms" }}>
+          <div className="flex items-center justify-between border-b rule px-5 py-3.5">
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-smoke">Delivery to</span>
+            <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-moss">
+              <IconCal size={13} /> {placed.shippingMethod === "Express" ? "1–2 days" : "2–5 days"}
+            </span>
           </div>
-          <div className="mt-8 flex flex-wrap gap-5">
-            <Link to="/shop" className="btn-fill inline-flex items-center gap-2.5 bg-ink px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] text-paper">
-              Continue browsing <IconArrowR size={14} />
-            </Link>
-            <Link to="/?s=fittings" className="link-line grow inline-flex items-center gap-2 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em]">
-              Book a fitting for it
-            </Link>
+          <div className="px-5 py-4 text-sm">
+            <p className="font-semibold">{placed.customer.name}</p>
+            <p className="mt-0.5 text-ink/70">{placed.customer.address}</p>
+            <p className="text-ink/70">
+              {placed.customer.city}, {placed.customer.country} — {placed.customer.zip}
+            </p>
           </div>
+          <ul className="divide-y divide-ink/10 border-t rule">
+            {placed.items.map((i) => (
+              <li key={`${i.productId}-${i.size}`} className="flex items-center justify-between gap-4 px-5 py-3 text-sm">
+                <span>
+                  {i.qty} × {i.name} <span className="text-smoke">— {i.colorway}, {i.size}</span>
+                </span>
+                <span className="tabular-nums">{money(i.price * i.qty)}</span>
+              </li>
+            ))}
+            <li className="flex items-center justify-between px-5 py-3 text-sm text-smoke">
+              <span>Shipping ({placed.shippingMethod})</span>
+              <span className="tabular-nums">{placed.shipping === 0 ? "Free" : money(placed.shipping)}</span>
+            </li>
+            <li className="flex items-center justify-between bg-bone/50 px-5 py-4">
+              <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Total paid</span>
+              <span className="font-display text-2xl font-semibold tabular-nums">{money(placed.total)}</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <Link
+            to="/shop"
+            className="btn-fill inline-flex items-center gap-2.5 bg-ink px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.22em] text-paper"
+          >
+            Continue shopping <IconArrowR size={14} />
+          </Link>
+          <Link
+            to="/"
+            className="link-line grow inline-flex items-center gap-2 px-2 py-3 text-[11px] font-bold uppercase tracking-[0.22em] text-smoke"
+          >
+            Back to home
+          </Link>
         </div>
       </div>
     );
@@ -130,26 +209,34 @@ export function Checkout() {
   /* ---------- empty ---------- */
   if (cart.length === 0) {
     return (
-      <div className="mx-auto flex max-w-xl flex-col items-center px-4 py-28 text-center md:py-36">
-        <span className="grid h-16 w-16 place-items-center border rule text-smoke"><IconHanger size={28} /></span>
-        <h1 className="mt-6 font-display text-4xl font-medium italic">Your bag is empty</h1>
-        <p className="mt-2 max-w-sm text-sm text-smoke">Checkout waits patiently. Add a piece or two first — the rail is twelve strong.</p>
-        <Link to="/shop" className="btn-fill mt-8 inline-flex items-center gap-2.5 bg-ink px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.2em] text-paper">
-          Back to the shop <IconArrowR size={14} />
+      <div className="mx-auto flex max-w-xl flex-col items-center gap-5 px-4 py-24 text-center md:py-32">
+        <span className="grid h-16 w-16 place-items-center border rule text-smoke">
+          <IconBag size={28} />
+        </span>
+        <h1 className="font-display text-3xl font-medium italic md:text-4xl">Your bag is empty</h1>
+        <p className="max-w-sm text-sm leading-relaxed text-ink/60">
+          Nothing to check out yet — the rails, however, are full. Sarees, kurtas, blazers and
+          everything between.
+        </p>
+        <Link
+          to="/shop"
+          className="btn-fill mt-2 inline-flex items-center gap-2.5 bg-ink px-7 py-3.5 text-[11px] font-bold uppercase tracking-[0.22em] text-paper"
+        >
+          Browse the shop <IconArrowR size={14} />
         </Link>
       </div>
     );
   }
 
   /* ---------- form ---------- */
-  const input = (k: keyof Form, label: string, props: InputHTMLAttributes<HTMLInputElement> = {}) => (
-    <div className={props.className?.includes("col-span") ? props.className : ""}>
-      <label className="flabel" htmlFor={`c-${k}`}>{label} *</label>
+  const field = (k: keyof Form, label: string, props: InputHTMLAttributes<HTMLInputElement> = {}) => (
+    <div>
+      <label className="flabel" htmlFor={`f-${k}`}>{label}</label>
       <input
-        id={`c-${k}`}
+        id={`f-${k}`}
         className={`field ${errors[k] ? "err" : ""}`}
         value={form[k]}
-        onChange={(e) => set(k)(e.target.value)}
+        onChange={set(k)}
         {...props}
       />
       {errors[k] && <p className="mt-1 text-[11px] font-semibold text-wine">{errors[k]}</p>}
@@ -158,225 +245,223 @@ export function Checkout() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 md:px-8 md:py-16">
-      <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-wine">
-        <span className="h-px w-8 bg-wine" /> Checkout
-      </p>
-      <h1 className="mt-3 font-display text-4xl font-medium tracking-tight md:text-6xl">Almost yours.</h1>
-      <div className="mt-3 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-smoke">
-        <span className="text-ink">Bag</span> <span className="h-px w-6 bg-ink/30" />
-        <span className="text-ink">Details</span> <span className="h-px w-6 bg-ink/30" />
-        <span className="text-wine">Confirm</span>
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b rule pb-8">
+        <div>
+          <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-wine">
+            <span className="h-px w-8 bg-wine" /> Secure checkout
+          </p>
+          <h1 className="mt-3 font-display text-5xl font-medium tracking-tight md:text-6xl">
+            Almost <em className="italic text-wine">yours.</em>
+          </h1>
+        </div>
+        <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.16em] text-smoke">
+          <IconKey size={14} className="text-moss" /> 256-bit encrypted · PCI-DSS
+        </p>
       </div>
 
-      <form onSubmit={submit} noValidate className="mt-10 grid gap-12 lg:grid-cols-12">
-        <div className="lg:col-span-7 space-y-10">
-          {/* contact */}
+      <form onSubmit={submit} className="mt-10 grid gap-12 lg:grid-cols-12" noValidate>
+        {/* left: details */}
+        <div className="space-y-12 lg:col-span-7">
+          {/* contact & delivery */}
           <section>
-            <h2 className="mb-4 flex items-baseline gap-3 font-display text-2xl font-medium">
-              <span className="text-wine italic">01</span> Contact
+            <h2 className="flex items-center gap-3 font-display text-2xl font-medium">
+              <span className="font-display italic text-wine text-base">01</span> Contact &amp; delivery
             </h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {input("name", "Full name", { placeholder: "Amara Osei" })}
-              {input("phone", "Phone", { placeholder: "+44 …", type: "tel" })}
-              <div className="sm:col-span-2">
-                <label className="flabel" htmlFor="c-email">Email *</label>
-                <input id="c-email" type="email" className={`field ${errors.email ? "err" : ""}`} value={form.email} onChange={(e) => set("email")(e.target.value)} placeholder="you@example.com" />
-                {errors.email && <p className="mt-1 text-[11px] font-semibold text-wine">{errors.email}</p>}
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+              {field("name", "Full name", { placeholder: "Priya Sharma", autoComplete: "name" })}
+              <div>
+                <label className="flabel" htmlFor="f-phone">Mobile number</label>
+                <div className="flex">
+                  <span className="flex items-center gap-1.5 border border-r-0 border-ink/15 bg-bone/60 px-3 text-sm text-ink/70">
+                    <IconPhone size={13} /> +91
+                  </span>
+                  <input
+                    id="f-phone"
+                    className={`field rounded-none ${errors.phone ? "err" : ""}`}
+                    value={form.phone}
+                    onChange={set("phone")}
+                    placeholder="98XXXXXXXX"
+                    inputMode="numeric"
+                  />
+                </div>
+                {errors.phone && <p className="mt-1 text-[11px] font-semibold text-wine">{errors.phone}</p>}
               </div>
+              <div className="sm:col-span-2">{field("email", "Email", { type: "email", placeholder: "you@example.in", autoComplete: "email" })}</div>
+              <div className="sm:col-span-2">{field("address", "Address", { placeholder: "Flat / house no., building, street, locality" })}</div>
+              {field("city", "City", { placeholder: "Jaipur" })}
+              <div>
+                <label className="flabel" htmlFor="f-state">State</label>
+                <select id="f-state" className={`field ${errors.state ? "err" : ""}`} value={form.state} onChange={(e) => { setForm((f) => ({ ...f, state: e.target.value })); setErrors((er) => ({ ...er, state: undefined })); }}>
+                  <option value="">Select state…</option>
+                  {STATES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+                {errors.state && <p className="mt-1 text-[11px] font-semibold text-wine">{errors.state}</p>}
+              </div>
+              {field("zip", "PIN code", { placeholder: "302001", inputMode: "numeric" })}
+              {field("notes", "Delivery notes (optional)", { placeholder: "Leave with security, call on arrival…" })}
             </div>
           </section>
 
-          {/* delivery */}
+          {/* shipping method */}
           <section>
-            <h2 className="mb-4 flex items-baseline gap-3 font-display text-2xl font-medium">
-              <span className="text-wine italic">02</span> Delivery
+            <h2 className="flex items-center gap-3 font-display text-2xl font-medium">
+              <span className="font-display italic text-wine text-base">02</span> Delivery speed
             </h2>
-            <div className="grid gap-4 sm:grid-cols-6">
-              <div className="sm:col-span-4">
-                <label className="flabel" htmlFor="c-address">Street address *</label>
-                <input id="c-address" className={`field ${errors.address ? "err" : ""}`} value={form.address} onChange={(e) => set("address")(e.target.value)} placeholder="18 Chiltern Street" />
-                {errors.address && <p className="mt-1 text-[11px] font-semibold text-wine">{errors.address}</p>}
-              </div>
-              <div className="sm:col-span-2">
-                <label className="flabel" htmlFor="c-city">City *</label>
-                <input id="c-city" className={`field ${errors.city ? "err" : ""}`} value={form.city} onChange={(e) => set("city")(e.target.value)} placeholder="London" />
-                {errors.city && <p className="mt-1 text-[11px] font-semibold text-wine">{errors.city}</p>}
-              </div>
-              <div className="sm:col-span-2">
-                <label className="flabel" htmlFor="c-zip">Postcode *</label>
-                <input id="c-zip" className={`field ${errors.zip ? "err" : ""}`} value={form.zip} onChange={(e) => set("zip")(e.target.value)} placeholder="W1U 7PY" />
-                {errors.zip && <p className="mt-1 text-[11px] font-semibold text-wine">{errors.zip}</p>}
-              </div>
-              <div className="sm:col-span-4">
-                <label className="flabel" htmlFor="c-country">Country</label>
-                <select id="c-country" className="field" value={form.country} onChange={(e) => set("country")(e.target.value)}>
-                  {COUNTRIES.map((c) => <option key={c}>{c}</option>)}
-                </select>
-              </div>
-              <div className="sm:col-span-6">
-                <label className="flabel" htmlFor="c-notes">Delivery notes</label>
-                <textarea id="c-notes" rows={2} className="field resize-none" value={form.notes} onChange={(e) => set("notes")(e.target.value)} placeholder="Concierge, safe place, gift wrap…" />
-              </div>
-            </div>
-
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {([
-                { m: "Standard" as const, d: "2–4 working days", p: cartSubtotal >= FREE_SHIP_AT ? 0 : 12 },
-                { m: "Express" as const, d: "1–2 working days", p: 24 },
-              ]).map((o) => (
+              {(
+                [
+                  { id: "Standard", title: "Standard", eta: "2–5 working days", price: cartSubtotal >= FREE_SHIP_AT ? 0 : 99 },
+                  { id: "Express", title: "Express", eta: "1–2 days · metros", price: 249 },
+                ] as { id: ShipMethod; title: string; eta: string; price: number }[]
+              ).map((m) => (
                 <button
                   type="button"
-                  key={o.m}
-                  onClick={() => setShipMethod(o.m)}
-                  className={`flex items-center justify-between border p-4 text-left transition-all duration-200 ${
-                    shipMethod === o.m ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink"
+                  key={m.id}
+                  onClick={() => setShip(m.id)}
+                  className={`border p-4 text-left transition-all duration-200 ${
+                    ship === m.id ? "border-ink bg-ink text-paper shadow-[0_16px_35px_-18px_rgba(28,23,18,0.6)]" : "border-ink/20 hover:border-ink"
                   }`}
-                  aria-pressed={shipMethod === o.m}
+                  aria-pressed={ship === m.id}
                 >
-                  <span>
-                    <span className="block text-sm font-bold uppercase tracking-[0.14em]">{o.m}</span>
-                    <span className={`mt-0.5 block text-xs ${shipMethod === o.m ? "text-fog" : "text-smoke"}`}>{o.d}</span>
+                  <span className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-[0.2em]">{m.title}</span>
+                    <span className={`text-sm font-semibold tabular-nums ${ship === m.id ? "text-gold" : ""}`}>
+                      {m.price === 0 ? "Free" : money(m.price)}
+                    </span>
                   </span>
-                  <span className="text-sm font-semibold tabular-nums">{o.p === 0 ? "Free" : money(o.p)}</span>
+                  <span className={`mt-1.5 block text-xs ${ship === m.id ? "text-fog" : "text-smoke"}`}>{m.eta}</span>
                 </button>
               ))}
             </div>
+            {cartSubtotal >= FREE_SHIP_AT && ship === "Standard" && (
+              <p className="mt-2.5 flex items-center gap-1.5 text-xs font-semibold text-moss">
+                <IconCheck size={13} /> Complimentary standard shipping unlocked
+              </p>
+            )}
           </section>
 
           {/* payment */}
           <section>
-            <h2 className="mb-4 flex items-baseline gap-3 font-display text-2xl font-medium">
-              <span className="text-wine italic">03</span> Payment
+            <h2 className="flex items-center gap-3 font-display text-2xl font-medium">
+              <span className="font-display italic text-wine text-base">03</span> Payment
             </h2>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {(["Card", "Cash on delivery"] as const).map((p) => (
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
+              {(["UPI", "Card", "Cash on delivery"] as Pay[]).map((p) => (
                 <button
                   type="button"
                   key={p}
-                  onClick={() => setPayment(p)}
-                  className={`border p-4 text-left transition-all duration-200 ${
-                    payment === p ? "border-ink bg-ink text-paper" : "border-ink/20 hover:border-ink"
+                  onClick={() => setPay(p)}
+                  className={`border px-4 py-3.5 text-[11px] font-bold uppercase tracking-[0.16em] transition-all duration-200 ${
+                    pay === p ? "border-wine bg-wine text-paper" : "border-ink/20 hover:border-wine hover:text-wine"
                   }`}
-                  aria-pressed={payment === p}
+                  aria-pressed={pay === p}
                 >
-                  <span className="block text-sm font-bold uppercase tracking-[0.14em]">{p}</span>
-                  <span className={`mt-0.5 block text-xs ${payment === p ? "text-fog" : "text-smoke"}`}>
-                    {p === "Card" ? "Charged when the order ships" : "Pay the courier at your door"}
-                  </span>
+                  {p}
                 </button>
               ))}
             </div>
-            {payment === "Card" && (
-              <div className="rise mt-4 grid gap-4 border rule bg-bone/40 p-4 sm:grid-cols-4 sm:p-5">
-                <div className="sm:col-span-4">
-                  <label className="flabel" htmlFor="c-cardName">Name on card *</label>
-                  <input id="c-cardName" className={`field ${errors.cardName ? "err" : ""}`} value={form.cardName} onChange={(e) => set("cardName")(e.target.value)} placeholder="A. OSEI" autoComplete="cc-name" />
-                  {errors.cardName && <p className="mt-1 text-[11px] font-semibold text-wine">{errors.cardName}</p>}
+
+            <div className="mt-4 border rule bg-bone/40 p-5">
+              {pay === "UPI" && (
+                <div className="pop max-w-sm">
+                  {field("upiId", "UPI ID", { placeholder: "name@okhdfc" })}
+                  <p className="mt-3 text-xs leading-relaxed text-smoke">
+                    A collect request will be sent to your UPI app — approve within 5 minutes to confirm.
+                  </p>
                 </div>
-                <div className="sm:col-span-4">
-                  <label className="flabel" htmlFor="c-cardNumber">Card number *</label>
-                  <input
-                    id="c-cardNumber"
-                    inputMode="numeric"
-                    className={`field tabular-nums ${errors.cardNumber ? "err" : ""}`}
-                    value={form.cardNumber}
-                    onChange={(e) =>
-                      set("cardNumber")(e.target.value.replace(/\D/g, "").slice(0, 16).replace(/(\d{4})(?=\d)/g, "$1 "))
-                    }
-                    placeholder="4242 4242 4242 4242"
-                    autoComplete="cc-number"
-                  />
-                  {errors.cardNumber && <p className="mt-1 text-[11px] font-semibold text-wine">{errors.cardNumber}</p>}
+              )}
+              {pay === "Card" && (
+                <div className="pop grid gap-4">
+                  <div className="max-w-md">{field("cardNo", "Card number", { placeholder: "4242 4242 4242 4242", inputMode: "numeric", autoComplete: "cc-number" })}</div>
+                  <div className="grid max-w-md grid-cols-2 gap-4">
+                    {field("cardExp", "Expiry", { placeholder: "MM / YY", inputMode: "numeric" })}
+                    {field("cardCvc", "CVC", { placeholder: "123", inputMode: "numeric", autoComplete: "cc-csc" })}
+                  </div>
                 </div>
-                <div className="sm:col-span-2">
-                  <label className="flabel" htmlFor="c-expiry">Expiry *</label>
-                  <input
-                    id="c-expiry"
-                    className={`field tabular-nums ${errors.expiry ? "err" : ""}`}
-                    value={form.expiry}
-                    onChange={(e) => {
-                      let v = e.target.value.replace(/[^\d]/g, "").slice(0, 4);
-                      if (v.length > 2) v = v.slice(0, 2) + "/" + v.slice(2);
-                      set("expiry")(v);
-                    }}
-                    placeholder="08/27"
-                    autoComplete="cc-exp"
-                  />
-                  {errors.expiry && <p className="mt-1 text-[11px] font-semibold text-wine">{errors.expiry}</p>}
+              )}
+              {pay === "Cash on delivery" && (
+                <div className="pop flex items-start gap-3 text-sm text-ink/75">
+                  <IconBag size={17} className="mt-0.5 shrink-0 text-wine" />
+                  <p className="leading-relaxed">
+                    Pay the delivery partner in cash or UPI at your door. A ₹50 handling fee is
+                    waived this festive season. Available on orders up to ₹50,000.
+                  </p>
                 </div>
-                <div className="sm:col-span-2">
-                  <label className="flabel" htmlFor="c-cvc">CVC *</label>
-                  <input
-                    id="c-cvc"
-                    inputMode="numeric"
-                    className={`field tabular-nums ${errors.cvc ? "err" : ""}`}
-                    value={form.cvc}
-                    onChange={(e) => set("cvc")(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                    placeholder="123"
-                    autoComplete="cc-csc"
-                  />
-                  {errors.cvc && <p className="mt-1 text-[11px] font-semibold text-wine">{errors.cvc}</p>}
-                </div>
-                <p className="sm:col-span-4 text-[11px] text-smoke">Demo checkout — nothing is charged and card details never leave your browser.</p>
-              </div>
-            )}
+              )}
+            </div>
           </section>
         </div>
 
-        {/* summary */}
+        {/* right: summary */}
         <aside className="lg:col-span-5">
-          <div className="sticky top-24 border rule bg-bone/40">
-            <h2 className="border-b rule px-5 py-4 font-display text-xl font-medium">Your order</h2>
+          <div className="border rule bg-paper lg:sticky lg:top-24">
+            <div className="flex items-center justify-between border-b rule px-5 py-4">
+              <h2 className="font-display text-xl font-medium">Order summary</h2>
+              <Link to="/shop" className="link-line grow text-[10px] font-bold uppercase tracking-[0.18em] text-smoke hover:text-wine">
+                Edit bag
+              </Link>
+            </div>
             <ul className="max-h-72 divide-y divide-ink/10 overflow-y-auto no-bar px-5">
               {cart.map((l) => {
                 const p = byId.get(l.productId);
                 if (!p) return null;
                 return (
-                  <li key={`${l.productId}-${l.size}`} className="flex items-center gap-3.5 py-3.5">
+                  <li key={`${l.productId}-${l.size}`} className="flex items-center gap-3.5 py-4">
                     <div className="relative h-16 w-[52px] shrink-0 overflow-hidden bg-bone">
                       <img src={p.img} alt="" className="h-full w-full object-cover" style={p.filter ? { filter: p.filter } : undefined} />
-                      <span className="absolute -right-0 -top-0 grid h-5 min-w-5 place-items-center bg-ink px-1 text-[9px] font-bold text-paper tabular-nums">{l.qty}</span>
+                      <span className="absolute -right-1 -top-1 grid h-5 w-5 place-items-center bg-ink text-[10px] font-bold text-paper">
+                        {l.qty}
+                      </span>
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold leading-tight">{p.name}</p>
-                      <p className="text-[10px] uppercase tracking-[0.14em] text-smoke">{p.colorway} · {p.category === "Footwear" ? `EU ${l.size}` : l.size}</p>
+                      <p className="truncate font-display text-[15px] leading-tight">{p.name}</p>
+                      <p className="text-[10px] uppercase tracking-[0.14em] text-smoke">{p.colorway} · {l.size}</p>
+                      <div className="mt-1.5">
+                        <Stepper small value={l.qty} onChange={(v) => setQty(l.productId, l.size, v)} />
+                      </div>
                     </div>
-                    <span className="text-sm font-semibold tabular-nums">{money(p.price * l.qty)}</span>
+                    <p className="text-sm font-semibold tabular-nums">{money(p.price * l.qty)}</p>
                   </li>
                 );
               })}
             </ul>
-            <div className="space-y-2 border-t rule px-5 py-4 text-sm">
-              <p className="flex justify-between text-ink/75"><span>Subtotal</span><span className="tabular-nums">{money(cartSubtotal)}</span></p>
-              <p className="flex justify-between text-ink/75">
-                <span>Shipping — {shipMethod}</span>
-                <span className="tabular-nums">{shipping === 0 ? <span className="font-semibold text-moss">Free</span> : money(shipping)}</span>
-              </p>
-              {cartSubtotal < FREE_SHIP_AT && shipMethod === "Standard" && (
-                <p className="text-[11px] text-smoke">Add {money(FREE_SHIP_AT - cartSubtotal)} more for complimentary shipping.</p>
-              )}
-              <p className="flex items-baseline justify-between border-t rule pt-3">
-                <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-smoke">Total</span>
-                <span className="font-display text-3xl font-semibold tabular-nums">{money(total)}</span>
-              </p>
-            </div>
-            <div className="px-5 pb-5">
+            <div className="space-y-2.5 border-t rule px-5 py-5 text-sm">
+              <div className="flex justify-between text-ink/75">
+                <span>Subtotal</span>
+                <span className="tabular-nums">{money(cartSubtotal)}</span>
+              </div>
+              <div className="flex justify-between text-ink/75">
+                <span>Shipping — {ship}</span>
+                <span className="tabular-nums">{shipCost === 0 ? <span className="font-semibold text-moss">Free</span> : money(shipCost)}</span>
+              </div>
+              <div className="flex items-baseline justify-between border-t rule pt-3.5">
+                <span className="text-[11px] font-bold uppercase tracking-[0.2em]">Total</span>
+                <span className="font-display text-3xl font-semibold tabular-nums">{money(cartSubtotal + shipCost)}</span>
+              </div>
+              <p className="text-[11px] text-smoke">Inclusive of all taxes · GST invoice emailed</p>
               <button
                 type="submit"
                 disabled={placing}
-                className="btn-fill flex w-full items-center justify-center gap-3 bg-ink py-4 text-[12px] font-bold uppercase tracking-[0.22em] text-paper disabled:opacity-70"
+                className="btn-fill mt-3 flex w-full items-center justify-center gap-3 bg-ink py-4 text-[12px] font-bold uppercase tracking-[0.22em] text-paper disabled:cursor-wait disabled:opacity-70"
               >
                 {placing ? (
-                  <span className="flex items-center gap-2">
-                    <span className="pulse-dot">Placing…</span>
-                  </span>
+                  <>
+                    <span className="pulse-dot h-1.5 w-1.5 rounded-full bg-gold" />
+                    Placing order…
+                  </>
                 ) : (
-                  <>Place order — {money(total)} <IconArrowR size={15} /></>
+                  <>
+                    Place order <IconArrowR size={15} />
+                  </>
                 )}
               </button>
-              <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[10px] text-smoke">
-                <IconKey size={11} /> Encrypted demo — staff can review it in the console.
-              </p>
+              <div className="flex items-center justify-center gap-4 pt-2 text-[10px] font-bold uppercase tracking-[0.16em] text-smoke">
+                <span className="flex items-center gap-1"><IconKey size={11} /> Secure</span>
+                <span className="flex items-center gap-1"><IconLeaf size={11} /> Plastic-free</span>
+                <span className="flex items-center gap-1"><IconCal size={11} /> 7-day returns</span>
+              </div>
             </div>
           </div>
         </aside>

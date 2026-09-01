@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { CATEGORIES, POLICIES, STORES } from "../data/catalog";
+import { CATEGORIES, POLICIES } from "../data/catalog";
 import { Link } from "../lib/router";
-import { Monogram, Marquee, TickerItem } from "./ui";
-import { IconArrowUR, IconClose, IconMail, IconPhone, IconPin, IconKey } from "./icons";
+import { Marquee, Monogram, TickerItem } from "./ui";
+import { IconArrowUR, IconClose, IconKey, IconMail, IconPhone, IconPin } from "./icons";
 
 export function Footer() {
   const [policy, setPolicy] = useState<string | null>(null);
@@ -13,10 +13,10 @@ export function Footer() {
       {/* oversized marquee */}
       <div className="border-b rule-light py-6">
         <Marquee slow>
-          {["Verso Atelier", "Porto · Paris · Copenhagen", "Est. 1987", "Cut — Sewn — Worn"].map((t) => (
+          {["Vasana", "Indian wear · online only", "Est. 2016 · Jaipur", "Loom — Stitch — Deliver"].map((t) => (
             <span key={t} className="pr-8 md:pr-14">
               <TickerItem>
-                <span className="font-display italic text-2xl md:text-4xl font-medium normal-case tracking-tight text-paper/90">
+                <span className="font-display italic text-2xl font-medium normal-case tracking-tight text-paper/90 md:text-4xl">
                   {t}
                 </span>
               </TickerItem>
@@ -29,19 +29,27 @@ export function Footer() {
         <div className="md:col-span-4">
           <Monogram className="text-3xl text-paper" />
           <p className="mt-5 max-w-xs text-sm leading-relaxed text-fog">
-            Considered ready-to-wear, cut in small series and made to be altered, repaired and worn
-            for decades — not seasons.
+            The complete Indian wardrobe, online only — Banarasi zari, chikankari kurtas, lehengas
+            and office formals bought direct from the weaver and delivered pan-India.
           </p>
           <div className="mt-6 space-y-2.5 text-sm text-fog">
             <p className="flex items-center gap-2.5">
-              <IconMail size={15} className="text-gold" /> atelier@verso.example
+              <IconMail size={15} className="text-gold" /> care@vasana.in
             </p>
             <p className="flex items-center gap-2.5">
-              <IconPhone size={15} className="text-gold" /> +351 22 018 44 90
+              <IconPhone size={15} className="text-gold" /> +91 141 400 2016 (10–19 IST)
             </p>
             <p className="flex items-start gap-2.5">
-              <IconPin size={15} className="mt-0.5 text-gold" /> Rua do Almada 114, 4050-032 Porto
+              <IconPin size={15} className="mt-0.5 text-gold" /> Fulfilment centre — Sitapura Industrial
+              Area, Jaipur 302022
             </p>
+          </div>
+          <div className="mt-7 flex flex-wrap gap-2">
+            {["UPI", "VISA", "Mastercard", "RuPay", "COD"].map((p) => (
+              <span key={p} className="border border-paper/25 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.18em] text-fog">
+                {p}
+              </span>
+            ))}
           </div>
         </div>
 
@@ -59,12 +67,12 @@ export function Footer() {
         </div>
 
         <div className="md:col-span-2">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold">Maison</h3>
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold">Explore</h3>
           <ul className="mt-4 space-y-2.5 text-sm">
-            <li><Link to="/?s=lookbook" className="link-line grow text-fog hover:text-paper">Lookbook</Link></li>
-            <li><Link to="/?s=atelier" className="link-line grow text-fog hover:text-paper">The Atelier</Link></li>
-            <li><Link to="/?s=fittings" className="link-line grow text-fog hover:text-paper">Private Fittings</Link></li>
+            <li><Link to="/shop?cat=Lehengas" className="link-line grow text-fog hover:text-paper">The Festive Edit</Link></li>
             <li><Link to="/shop" className="link-line grow text-fog hover:text-paper">New Arrivals</Link></li>
+            <li><Link to="/?s=lookbook" className="link-line grow text-fog hover:text-paper">Lookbook</Link></li>
+            <li><Link to="/?s=story" className="link-line grow text-fog hover:text-paper">Loom to Doorstep</Link></li>
             <li>
               <Link to="/admin" className="link-line grow inline-flex items-center gap-1.5 text-fog hover:text-paper">
                 <IconKey size={12} /> Staff console
@@ -78,10 +86,7 @@ export function Footer() {
           <ul className="mt-4 space-y-2.5 text-sm">
             {Object.entries(POLICIES).map(([key, p]) => (
               <li key={key}>
-                <button
-                  onClick={() => setPolicy(key)}
-                  className="link-line grow text-fog hover:text-paper"
-                >
+                <button onClick={() => setPolicy(key)} className="link-line grow text-fog hover:text-paper">
                   {p.title}
                 </button>
               </li>
@@ -90,25 +95,18 @@ export function Footer() {
         </div>
 
         <div className="md:col-span-2">
-          <h3 className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold">Ateliers</h3>
-          <ul className="mt-4 space-y-4 text-sm">
-            {STORES.map((s) => (
-              <li key={s.city}>
-                <p className="font-display italic text-base text-paper">
-                  {s.city}
-                  {s.flag && <span className="ml-2 text-[9px] not-italic font-body font-bold uppercase tracking-[0.18em] text-gold">Flagship</span>}
-                </p>
-                <p className="mt-0.5 text-xs text-fog">{s.addr}</p>
-                <p className="text-xs text-smoke">{s.hours}</p>
-              </li>
-            ))}
+          <h3 className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold">The Promise</h3>
+          <ul className="mt-4 space-y-3 text-sm text-fog">
+            <li className="border-l border-gold/60 pl-3 text-xs leading-relaxed">Free delivery over ₹1,999, to all 27 states &amp; UTs.</li>
+            <li className="border-l border-gold/60 pl-3 text-xs leading-relaxed">7-day doorstep returns, size exchange always free.</li>
+            <li className="border-l border-gold/60 pl-3 text-xs leading-relaxed">Every handloom bought direct — weaver named on the fall.</li>
           </ul>
         </div>
       </div>
 
       <div className="border-t rule-light">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 text-[11px] text-smoke md:flex-row md:px-8">
-          <p>© 2025 Verso Atelier — Cut &amp; sewn in Porto. All fibres traceable.</p>
+          <p>© 2026 Vasana Retail Pvt. Ltd. — Jaipur, India. All fabrics traceable to the loom.</p>
           <div className="flex items-center gap-5">
             {["Instagram", "Pinterest", "Journal"].map((s) => (
               <a
@@ -118,7 +116,7 @@ export function Footer() {
                 rel="noreferrer"
                 className="link-line grow inline-flex items-center gap-1 font-semibold uppercase tracking-[0.16em] text-fog hover:text-paper"
               >
-                {s} <IconArrowUR size={11} />
+                {s} <IconArrowUR size={10} />
               </a>
             ))}
           </div>
@@ -127,26 +125,27 @@ export function Footer() {
 
       {/* policy modal */}
       {active && (
-        <div className="fixed inset-0 z-[92] grid place-items-center p-4" role="dialog" aria-modal="true" aria-label={active.title}>
-          <button className="absolute inset-0 bg-ink/70" onClick={() => setPolicy(null)} aria-label="Close" />
-          <div className="pop relative w-full max-w-lg bg-paper p-7 md:p-9 max-h-[85vh] overflow-y-auto no-bar">
-            <button
-              onClick={() => setPolicy(null)}
-              className="absolute top-3.5 right-3.5 grid h-9 w-9 place-items-center border rule hover:bg-ink hover:text-paper transition-colors"
-              aria-label="Close"
-            >
-              <IconClose size={14} />
-            </button>
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-wine">Client care</p>
-            <h3 className="mt-2 font-display text-3xl font-medium">{active.title}</h3>
-            <div className="mt-5 space-y-4 text-sm leading-relaxed text-ink/80">
+        <div className="fixed inset-0 z-[90] flex items-end justify-center p-0 sm:items-center sm:p-6">
+          <button className="absolute inset-0 bg-ink/60" onClick={() => setPolicy(null)} aria-label="Close policy" />
+          <div className="pop relative max-h-[80vh] w-full max-w-lg overflow-y-auto bg-paper p-7 text-ink sm:p-9">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-wine">Vasana client care</p>
+                <h3 className="mt-1.5 font-display text-3xl font-medium">{active.title}</h3>
+              </div>
+              <button
+                onClick={() => setPolicy(null)}
+                className="grid h-9 w-9 shrink-0 place-items-center border rule hover:bg-ink hover:text-paper transition-colors"
+                aria-label="Close"
+              >
+                <IconClose size={15} />
+              </button>
+            </div>
+            <div className="mt-5 space-y-4 text-sm leading-relaxed text-ink/75">
               {active.body.map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
             </div>
-            <p className="mt-6 border-t rule pt-4 text-xs text-smoke">
-              Questions? Write to <span className="font-semibold text-ink">atelier@verso.example</span> — a person answers within two working days.
-            </p>
           </div>
         </div>
       )}

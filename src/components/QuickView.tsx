@@ -73,8 +73,7 @@ export function QuickView() {
   if (!product) return null;
 
   const saved = wishlist.includes(product.id);
-  const isShoe = product.category === "Footwear";
-  const rows = SIZE_ROWS[isShoe ? "shoes" : "apparel"];
+  const rows = SIZE_ROWS["apparel"];
 
   const add = () => {
     if (!size) {
@@ -139,7 +138,7 @@ export function QuickView() {
           <div className="mt-6">
             <div className="flex items-center justify-between mb-2.5">
               <span className={`flabel mb-0 ${sizeError ? "text-wine" : ""}`}>
-                Select size {isShoe && "— EU"}
+                Select size
               </span>
               <button
                 onClick={() => setGuide(!guide)}
@@ -178,8 +177,8 @@ export function QuickView() {
                   <thead className="bg-bone/60 text-[10px] uppercase tracking-[0.14em] text-smoke">
                     <tr>
                       <th className="px-3 py-2 text-left">Size</th>
-                      <th className="px-3 py-2 text-left">{isShoe ? "UK" : "FR"}</th>
-                      <th className="px-3 py-2 text-left">{isShoe ? "Foot length" : "Chest cm"}</th>
+                      <th className="px-3 py-2 text-left">Std</th>
+                      <th className="px-3 py-2 text-left">Chest (cm)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -223,19 +222,19 @@ export function QuickView() {
           <div className="mt-7 border-t rule">
             <Accordion title="Fabric & Care">{product.details}</Accordion>
             <Accordion title="Shipping & Returns">
-              Complimentary standard shipping over {money(250)}. Dispatched within one working day
-              from Porto; 30-day returns in unworn condition{product.badge === "Final sale" ? " — this final-sale piece is excluded" : ""}.
+              Free standard delivery over {money(1999)}; dispatched within 48 hours from Jaipur to
+              all 27 states. 7-day doorstep returns and free size exchange on unworn pieces.
             </Accordion>
             <Accordion title="Provenance">
-              {isShoe
-                ? "Welted on our house last in Northampton; resoleable for life at any Verso atelier."
-                : `Woven and sewn within 300 km of our Porto atelier. Fibres traceable to the mill on the care label.`}
+              Woven and stitched with partner ateliers in Jaipur &amp; Lucknow; handloom bought
+              direct from weaver co-operatives. Every fabric is traceable to the loom on the care
+              label.
             </Accordion>
           </div>
 
           <p className="mt-5 flex items-center gap-2 text-[11px] text-smoke">
             <IconArrowR size={12} className="text-gold" />
-            In stock — ships tomorrow from Porto
+            In stock — ships within 48 hrs from Jaipur
           </p>
         </div>
       </div>

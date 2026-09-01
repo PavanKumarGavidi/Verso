@@ -118,103 +118,61 @@ const totals = (items: OrderItem[], shipping: number) => {
 };
 
 export function seedOrders(): Order[] {
-  const o1i = [line("marlow-charcoal", "M", 1), line("rowan-blanc", "S", 1)];
-  const o2i = [line("ashford-oat", "L", 2), line("kent-ink", "32", 1)];
-  const o3i = [line("vesper-choc", "M", 1), line("lennox-tan", "39", 1)];
-  const o4i = [line("hollis-brun", "M", 1)];
-  const o5i = [line("ashford-espresso", "S", 1), line("kent-stone", "28", 1)];
-  const o6i = [line("marlow-charcoal", "L", 1)];
+  const o1i = [line("banarasi-rani", "Free size", 1), line("chikankari-ivory", "M", 1)];
+  const o2i = [line("meera-maroon", "M", 1)];
+  const o3i = [line("navy-blazer", "40", 1), line("ivory-shirt", "M", 2)];
+  const o4i = [line("anarkali-haldi", "S", 1), line("dilli-kurti", "M", 1)];
+  const o5i = [line("nehru-indigo", "40", 1), line("charcoal-trouser", "32", 1)];
+  const o6i = [line("banarasi-sona", "Free size", 1)];
   return [
     {
-      id: "VS-10238",
+      id: "VS-20238",
       createdAt: iso(0, 9, 42),
-      customer: { name: "Amara Osei", email: "amara.osei@post.com", phone: "+44 7911 284 501", address: "18 Chiltern Street", city: "London", zip: "W1U 7PY", country: "United Kingdom" },
-      items: o3i, payment: "Card", shippingMethod: "Express", status: "Pending",
-      ...totals(o3i, 24),
-    },
-    {
-      id: "VS-10237",
-      createdAt: iso(1, 16, 5),
-      customer: { name: "Daniel Reyes", email: "d.reyes@correo.mx", phone: "+52 55 1180 2294", address: "Av. Álvaro Obregón 256", city: "Mexico City", zip: "06700", country: "Mexico" },
-      items: o2i, payment: "Card", shippingMethod: "Standard", status: "Confirmed",
-      ...totals(o2i, 0),
-    },
-    {
-      id: "VS-10236",
-      createdAt: iso(2, 12, 47),
-      customer: { name: "Claire Moreau", email: "claire.moreau@orange.fr", phone: "+33 6 12 44 90 31", address: "27 Rue des Martyrs", city: "Paris", zip: "75009", country: "France" },
-      items: o1i, payment: "Cash on delivery", shippingMethod: "Standard", status: "Shipped",
+      customer: { name: "Ananya Sharma", email: "ananya.sharma@gmail.com", phone: "+91 98201 14432", address: "B-1402, Oberoi Splendor, Goregaon East", city: "Mumbai", zip: "400063", country: "India" },
+      items: o1i, payment: "UPI", shippingMethod: "Standard", status: "Pending",
       ...totals(o1i, 0),
     },
     {
-      id: "VS-10233",
+      id: "VS-20237",
+      createdAt: iso(1, 16, 5),
+      customer: { name: "Ishita Patel", email: "ishita.p@outlook.in", phone: "+91 99250 33871", address: "12, Vrundavan Society, Satellite", city: "Ahmedabad", zip: "380015", country: "India" },
+      items: o2i, payment: "Card", shippingMethod: "Express", status: "Confirmed",
+      ...totals(o2i, 249),
+    },
+    {
+      id: "VS-20236",
+      createdAt: iso(2, 12, 47),
+      customer: { name: "Rohan Mehta", email: "rohan.mehta@proton.me", phone: "+91 98450 77210", address: "74, 4th Cross, Indiranagar", city: "Bengaluru", zip: "560038", country: "India" },
+      items: o3i, payment: "UPI", shippingMethod: "Standard", status: "Shipped",
+      ...totals(o3i, 0),
+    },
+    {
+      id: "VS-20233",
       createdAt: iso(3, 10, 12),
-      customer: { name: "Sofia Lindqvist", email: "sofia.l@telia.se", phone: "+46 70 312 55 19", address: "Kommendörsgatan 12", city: "Stockholm", zip: "114 48", country: "Sweden" },
-      items: o6i, payment: "Card", shippingMethod: "Standard", status: "Confirmed",
-      ...totals(o6i, 0),
+      customer: { name: "Kavya Reddy", email: "kavya.reddy@yahoo.in", phone: "+91 90000 45112", address: "Plot 21, Jubilee Hills, Road No. 10", city: "Hyderabad", zip: "500033", country: "India" },
+      items: o4i, payment: "Cash on delivery", shippingMethod: "Standard", status: "Confirmed",
+      ...totals(o4i, 0),
     },
     {
-      id: "VS-10231",
+      id: "VS-20231",
       createdAt: iso(5, 14, 33),
-      customer: { name: "Jonas Weber", email: "j.weber@gmx.de", phone: "+49 151 2903 887", address: "Torstraße 101", city: "Berlin", zip: "10119", country: "Germany" },
-      items: o4i, payment: "Card", shippingMethod: "Express", status: "Delivered",
-      ...totals(o4i, 24),
+      customer: { name: "Arjun Nair", email: "arjun.nair@gmail.com", phone: "+91 98951 20876", address: "33/1147, Panampilly Nagar", city: "Kochi", zip: "682036", country: "India" },
+      items: o5i, payment: "Card", shippingMethod: "Express", status: "Delivered",
+      ...totals(o5i, 249),
     },
     {
-      id: "VS-10229",
+      id: "VS-20229",
       createdAt: iso(6, 9, 5),
-      customer: { name: "Priya Nair", email: "priya.nair@in.com", phone: "+91 98 2011 4432", address: "14 Cuffe Parade", city: "Mumbai", zip: "400005", country: "India" },
-      items: o5i, payment: "Card", shippingMethod: "Standard", status: "Cancelled",
-      ...totals(o5i, 0),
+      customer: { name: "Meera Iyer", email: "meera.iyer@gmail.com", phone: "+91 94441 89032", address: "8, Harrington Road, Chetpet", city: "Chennai", zip: "600031", country: "India" },
+      items: o6i, payment: "UPI", shippingMethod: "Standard", status: "Cancelled",
+      ...totals(o6i, 0),
     },
   ];
 }
 
 export function seedAppointments(): Appointment[] {
-  const future = (days: number) => {
-    const d = new Date(Date.now() + days * day);
-    return d.toISOString().slice(0, 10);
-  };
-  return [
-    {
-      id: "PF-512",
-      createdAt: iso(0, 8, 15),
-      name: "Elena Duarte",
-      email: "elena.duarte@sapo.pt",
-      phone: "+351 912 445 019",
-      service: "Wardrobe consultation",
-      store: "Porto",
-      visitDate: future(1),
-      visitTime: "11:00",
-      notes: "Autumn capsule — mostly neutrals, one statement coat.",
-      status: "Requested",
-    },
-    {
-      id: "PF-511",
-      createdAt: iso(1, 15, 40),
-      name: "Marc Aubert",
-      email: "marc.aubert@free.fr",
-      phone: "+33 7 68 20 91 45",
-      service: "Made-to-measure",
-      store: "Paris",
-      visitDate: future(3),
-      visitTime: "15:00",
-      notes: "Second fitting for the navy double-breasted.",
-      status: "Confirmed",
-    },
-    {
-      id: "PF-509",
-      createdAt: iso(3, 11, 2),
-      name: "Ingrid Holm",
-      email: "ingrid.holm@post.dk",
-      phone: "+45 28 71 90 34",
-      service: "Occasion dressing",
-      store: "Copenhagen",
-      visitDate: future(-2),
-      visitTime: "16:00",
-      status: "Completed",
-    },
-  ];
+  /* Online-only store — no in-person bookings. Kept for type compatibility. */
+  return [];
 }
 
 /* ---------------- context ---------------- */
@@ -347,7 +305,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const placeOrder = useCallback(
     (customer: Order["customer"], payment: string, shippingMethod: string, shipping: number): Order => {
-      const items: OrderItem[] = cart.map((l) => {
+      const items: OrderItem[] = cart.filter((l) => byId.has(l.productId)).map((l) => {
         const p = byId.get(l.productId)!;
         return {
           productId: p.id,
@@ -461,4 +419,4 @@ export function useStore(): Store {
   return s;
 }
 
-export const FREE_SHIP_AT = 250;
+export const FREE_SHIP_AT = 1999;

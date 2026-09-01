@@ -54,7 +54,7 @@ export function Shop({ route }: { route: Route }) {
       <div className="flex flex-wrap items-end justify-between gap-6 border-b rule pb-8">
         <div>
           <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.24em] text-wine">
-            <span className="h-px w-8 bg-wine" /> The wardrobe — AW’25
+            <span className="h-px w-8 bg-wine" /> The Indian wardrobe — Festive ’25
           </p>
           <h1 className="mt-3 font-display text-5xl font-medium tracking-tight md:text-7xl">
             {cat === "All" ? "Everything." : cat + "."}
@@ -178,12 +178,10 @@ export function Shop({ route }: { route: Route }) {
 
       {/* bottom note */}
       <div className="mt-20 border-t rule pt-8 text-center">
-        <p className="text-sm text-smoke">
-          Unsure between two pieces?{" "}
-          <Link to="/?s=fittings" className="link-line grow font-semibold text-wine">
-            Book a fitting
-          </Link>{" "}
-          and try both at the atelier — on us.
+        <p className="mx-auto max-w-lg text-sm leading-relaxed text-smoke">
+          Unsure of your size? Every order includes a{" "}
+          <span className="font-semibold text-wine">free size exchange</span> — the delivery partner
+          brings the new size to your door and takes the old one back. No forms, no fees.
         </p>
       </div>
     </div>

@@ -102,7 +102,7 @@ export function CartDrawer() {
                         <div className="min-w-0">
                           <p className="font-display text-[15px] leading-tight truncate">{p.name}</p>
                           <p className="mt-0.5 text-[11px] uppercase tracking-[0.14em] text-smoke">
-                            {p.colorway} · {p.category === "Footwear" ? `EU ${l.size}` : l.size}
+                            {p.colorway} · {l.size}
                           </p>
                         </div>
                         <p className="text-sm font-semibold tabular-nums whitespace-nowrap">
