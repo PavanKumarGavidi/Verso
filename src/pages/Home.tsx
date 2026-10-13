@@ -2,15 +2,10 @@ import { useState, type FormEvent } from "react";
 import {
   CATEGORIES,
   GEN_KURTA,
-  KURTA_VAN,
-  LEH_MAROON,
-  LOOK_FIELD,
-  LOOK_GRASS,
+  MEN_TRAD_TWO,
+  MEN_TRAD_COLOR,
   OCCASIONS,
   PRESS,
-  PRODUCTS,
-  TICKER,
-  byId,
   money,
 } from "../data/catalog";
 import { useStore } from "../lib/store";
@@ -28,11 +23,11 @@ import {
   IconSpark,
 } from "../components/icons";
 
-const hero = byId.get("meera-maroon")!;
-
 export function Home() {
-  const featured = PRODUCTS.filter((p) => p.featured);
-  const fresh = PRODUCTS.filter((p) => p.isNew);
+  const { products, content } = useStore();
+  const featured = products.filter((p) => p.featured);
+  const fresh = products.filter((p) => p.isNew);
+  const hero = products.find((p) => p.id === "sher-ivory-gold") || featured[0];
 
   return (
     <>
@@ -43,38 +38,34 @@ export function Home() {
           <div className="relative z-10 flex flex-col justify-center lg:col-span-6">
             <Reveal>
               <p className="flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.26em] text-wine">
-                <span className="h-px w-10 bg-wine" /> Festive Edit ’25 — now live
+                <span className="h-px w-10 bg-wine" /> Men's Festive Edit '25 — now live
               </p>
             </Reveal>
             <Reveal delay={80}>
               <h1 className="mt-6 font-display text-[15vw] font-medium leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl">
-                Woven
+                Dressed in
                 <br />
-                in <em className="italic text-wine">India.</em>
-                <br />
-                <span className="outline-text">Worn everywhere.</span>
+                <em className="italic text-wine">quiet</em> intent.
               </h1>
             </Reveal>
             <Reveal delay={160}>
               <p className="mt-7 max-w-md text-[15px] leading-relaxed text-ink/70">
-                Banarasi zari to boardroom blazers — the complete Indian wardrobe, online only.
-                Handloom from the weaver, dispatched from Jaipur, delivered to all 27 states
-                in 48 hours.
+                {content.heroSubline}
               </p>
             </Reveal>
             <Reveal delay={240}>
               <div className="mt-9 flex flex-wrap items-center gap-4">
                 <Link
-                  to="/shop?cat=Lehengas"
+                  to="/shop?cat=Sherwanis"
                   className="btn-fill inline-flex items-center gap-3 bg-ink px-7 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-paper"
                 >
-                  Shop festive <IconArrowR size={14} />
+                  {content.heroCta} <IconArrowR size={14} />
                 </Link>
                 <Link
-                  to="/shop?cat=Casual"
+                  to="/shop?cat=Kurtas & Sets"
                   className="link-line grow inline-flex items-center gap-2 px-1 py-2 text-[11px] font-bold uppercase tracking-[0.22em] text-ink"
                 >
-                  Shop casual <IconArrowUR size={13} />
+                  Shop Kurtas <IconArrowUR size={13} />
                 </Link>
               </div>
             </Reveal>
@@ -99,31 +90,33 @@ export function Home() {
             <Reveal delay={140} className="relative h-[52vh] min-h-[380px] sm:h-[62vh] lg:h-full lg:min-h-[560px]">
               <Corners />
               <Img
-                src={LEH_MAROON}
-                alt="Model in a maroon zardozi lehenga from the Festive Edit ’25"
+                src={MEN_TRAD_TWO}
+                alt="Two men in traditional Indian sherwanis from the Festive Edit '25"
                 wrapClassName="absolute inset-0 h-full"
                 className="kenburns"
                 eager
               />
               {/* floating product card */}
-              <button
-                onClick={() => navigate("/shop?cat=Lehengas")}
-                className="group absolute bottom-5 left-5 flex items-center gap-3 bg-paper/95 p-3 pr-5 text-left shadow-[0_20px_50px_-20px_rgba(28,23,18,0.6)] transition-transform duration-300 hover:-translate-y-1"
-              >
-                <Img src={hero.img} alt="" wrapClassName="h-14 w-11 shrink-0" />
-                <span>
-                  <span className="block text-[9px] font-bold uppercase tracking-[0.2em] text-wine">
-                    Shop the look
+              {hero && (
+                <button
+                  onClick={() => navigate("/shop?cat=Sherwanis")}
+                  className="group absolute bottom-5 left-5 flex items-center gap-3 bg-paper/95 p-3 pr-5 text-left shadow-[0_20px_50px_-20px_rgba(28,23,18,0.6)] transition-transform duration-300 hover:-translate-y-1"
+                >
+                  <Img src={hero.img} alt="" wrapClassName="h-14 w-11 shrink-0" />
+                  <span>
+                    <span className="block text-[9px] font-bold uppercase tracking-[0.2em] text-wine">
+                      Shop the look
+                    </span>
+                    <span className="mt-0.5 block font-display text-sm font-semibold leading-tight">
+                      {hero.name} — {hero.colorway}
+                    </span>
+                    <span className="text-xs font-semibold tabular-nums">{money(hero.price)}</span>
                   </span>
-                  <span className="mt-0.5 block font-display text-sm font-semibold leading-tight">
-                    {hero.name} — {hero.colorway}
-                  </span>
-                  <span className="text-xs font-semibold tabular-nums">{money(hero.price)}</span>
-                </span>
-                <IconArrowUR size={16} className="text-smoke transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </button>
+                  <IconArrowUR size={16} className="text-smoke transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </button>
+              )}
               <span className="absolute right-5 top-5 border border-paper/50 px-2.5 py-1.5 text-[9px] font-bold uppercase tracking-[0.22em] text-paper/90 backdrop-blur-sm">
-                AW ’25 · Look 01
+                AW '25 · Look 01
               </span>
             </Reveal>
           </div>
@@ -133,7 +126,7 @@ export function Home() {
       {/* ============ TICKER ============ */}
       <div className="bg-ink py-3 text-paper/90">
         <Marquee>
-          {TICKER.map((t) => (
+          {content.ticker.map((t: string) => (
             <TickerItem key={t}>{t}</TickerItem>
           ))}
         </Marquee>
@@ -146,7 +139,7 @@ export function Home() {
           kicker="Every wardrobe, six rails"
           title={
             <>
-              From <em className="italic text-wine">saree</em> to
+              From <em className="italic text-wine">sherwani</em> to
               <br />
               boardroom.
             </>
@@ -201,7 +194,7 @@ export function Home() {
             title="The Festive Edit"
             right={
               <Link
-                to="/shop?cat=Lehengas"
+                to="/shop?cat=Sherwanis"
                 className="link-line grow inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.2em] text-ink"
               >
                 All festive <IconArrowR size={14} />
@@ -221,7 +214,7 @@ export function Home() {
               <span className="grid h-12 w-12 place-items-center border rule text-smoke transition-colors group-hover:border-wine group-hover:text-wine">
                 <IconSpark size={20} />
               </span>
-              <span className="font-display text-xl italic">See all {PRODUCTS.length} pieces</span>
+              <span className="font-display text-xl italic">See all {products.length} pieces</span>
               <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-smoke">Browse the shop</span>
             </Link>
           </div>
@@ -315,14 +308,14 @@ export function Home() {
             </Reveal>
             <Reveal delay={170}>
               <p className="mt-6 max-w-md text-[15px] leading-relaxed text-fog">
-                Rani pink against lake water, zari under marigold light — the Festive Edit was
+                Maroon velvet against lake water, zari under marigold light — the Festive Edit was
                 photographed in Udaipur without a single studio lamp. Because Indian colour
-                doesn’t need help.
+                doesn't need help.
               </p>
             </Reveal>
             <Reveal delay={250}>
               <Link
-                to="/shop?cat=Sarees"
+                to="/shop?cat=Sherwanis"
                 className="btn-fill mt-8 inline-flex items-center gap-3 bg-paper px-7 py-4 text-[11px] font-bold uppercase tracking-[0.22em] text-ink"
               >
                 Shop the edit <IconArrowR size={14} />
@@ -335,7 +328,7 @@ export function Home() {
                 <div className="relative">
                   <Corners light />
                   <div className="aspect-[3/4] overflow-hidden">
-                    <Img src={LOOK_FIELD} alt="Lookbook — red lehenga in an open field" wrapClassName="h-full" className="kenburns" />
+                    <Img src={MEN_TRAD_COLOR} alt="Lookbook — men in colorful traditional Indian wear" wrapClassName="h-full" className="kenburns" />
                   </div>
                 </div>
               </Reveal>
@@ -343,11 +336,11 @@ export function Home() {
                 <div className="relative">
                   <Corners light />
                   <div className="aspect-[3/4] overflow-hidden">
-                    <Img src={LOOK_GRASS} alt="Lookbook — red and gold lehenga in tall grass" wrapClassName="h-full" />
+                    <Img src={GEN_KURTA} alt="Lookbook — man in ivory kurta with Nehru jacket" wrapClassName="h-full" />
                   </div>
                 </div>
                 <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.2em] text-smoke">
-                  Look 02 — Scarlet &amp; gold · ₹12,999
+                  Look 02 — Ivory & Indigo · ₹5,999
                 </p>
               </Reveal>
             </div>
@@ -373,8 +366,8 @@ export function Home() {
           <Reveal delay={170}>
             <p className="mt-6 max-w-lg text-[15px] leading-relaxed text-ink/70">
               No showrooms, no middlemen, no mark-ups for rent. We buy directly from weaver
-              co-operatives in Varanasi, Kanchipuram and Chanderi, stitch with partner ateliers in
-              Jaipur and Lucknow, and ship straight to you — which is how a ₹21-day Banarasi
+              co-operatives in Varanasi, Lucknow and Bagru, stitch with partner ateliers in
+              Jaipur, and ship straight to you — which is how a hand-embroidered sherwani
               reaches you at an honest price.
             </p>
           </Reveal>
@@ -397,9 +390,9 @@ export function Home() {
         <div className="md:col-span-6">
           <Reveal delay={140} className="relative h-[420px] md:h-full md:min-h-[540px]">
             <Corners />
-            <Img src={KURTA_VAN} alt="Heritage kurta set photographed in a forest clearing" wrapClassName="absolute inset-0 h-full" className="kenburns" />
+            <Img src={MEN_TRAD_COLOR} alt="Men in traditional Indian wear photographed in a heritage setting" wrapClassName="absolute inset-0 h-full" className="kenburns" />
             <span className="absolute bottom-4 left-4 bg-paper/95 px-3 py-2 text-[9px] font-bold uppercase tracking-[0.2em] text-ink">
-              Dabu block print · Bagru, Rajasthan
+              Hand-embroidered · Lucknow, UP
             </span>
           </Reveal>
         </div>
@@ -434,7 +427,7 @@ export function Home() {
           kicker="As written about us"
           title={
             <>
-              The press <em className="italic text-wine">drapes in.</em>
+              The press <em className="italic text-wine">dresses in.</em>
             </>
           }
         />
@@ -443,7 +436,7 @@ export function Home() {
             <figure key={p.source} className={`bg-paper p-7 transition-colors hover:bg-bone/50 md:p-9 ${i === 1 ? "md:translate-y-6" : ""}`}>
               <IconSpark size={16} className="text-gold" />
               <blockquote className="mt-4 font-display text-xl italic leading-snug md:text-2xl">
-                “{p.quote}”
+                "{p.quote}"
               </blockquote>
               <figcaption className="mt-5 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-smoke">
                 <span className="h-px w-6 bg-ink/40" /> {p.source} · {p.issue}
@@ -473,7 +466,7 @@ function Newsletter() {
       return;
     }
     setState("done");
-    toast("You’re on the list", "First drop of the Diwali Edit lands in your inbox.", "ok");
+    toast("You're on the list", "First drop of the Diwali Edit lands in your inbox.", "ok");
   };
 
   return (
@@ -498,7 +491,7 @@ function Newsletter() {
           </Reveal>
           <Reveal delay={160}>
             <p className="mt-4 max-w-md text-sm leading-relaxed text-fog">
-              New drops sell out in days — Banarasi in hours. Join the list and get 24-hour early
+              New drops sell out in days — sherwanis in hours. Join the list and get 24-hour early
               access, plus a ₹500 welcome credit.
             </p>
           </Reveal>
@@ -511,7 +504,7 @@ function Newsletter() {
                   <IconCheck size={18} />
                 </span>
                 <div>
-                  <p className="font-display text-lg font-medium">Shubh! You’re in.</p>
+                  <p className="font-display text-lg font-medium">Shubh! You're in.</p>
                   <p className="mt-0.5 text-xs text-fog">
                     ₹500 credit added — it applies automatically at your first checkout.
                   </p>
@@ -543,7 +536,7 @@ function Newsletter() {
                 </div>
                 <p className={`mt-2.5 text-[11px] ${state === "error" ? "text-gold" : "text-smoke"}`}>
                   {state === "error"
-                    ? "That email doesn’t look right — try again?"
+                    ? "That email doesn't look right — try again?"
                     : "One email a week, max. Unsubscribe in a tap."}
                 </p>
               </form>

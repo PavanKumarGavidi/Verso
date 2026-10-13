@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { CATEGORIES, TICKER } from "../data/catalog";
+import { CATEGORIES } from "../data/catalog";
 import { useStore } from "../lib/store";
 import { Link, navigate } from "../lib/router";
 import { Marquee, Monogram, TickerItem } from "./ui";
@@ -7,8 +7,9 @@ import { IconArrowUR, IconBag, IconHeart, IconKey, IconSearch } from "./icons";
 
 const NAV = [
   { label: "Shop All", to: "/shop" },
-  { label: "Festive", to: "/shop?cat=Lehengas" },
-  { label: "Sarees", to: "/shop?cat=Sarees" },
+  { label: "Sherwanis", to: "/shop?cat=Sherwanis" },
+  { label: "Kurtas", to: "/shop?cat=Kurtas & Sets" },
+  { label: "Formal", to: "/shop?cat=Formal Wear" },
   { label: "Our Story", to: "/?s=story" },
 ];
 
@@ -22,7 +23,7 @@ function Badge({ n }: { n: number }) {
 }
 
 export function Header() {
-  const { cartCount, wishlist, setCartOpen } = useStore();
+  const { cartCount, wishlist, setCartOpen, content } = useStore();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -48,7 +49,7 @@ export function Header() {
       {/* announcement ticker */}
       <div className="bg-ink py-2 text-paper/90">
         <Marquee>
-          {TICKER.map((t) => (
+          {content.ticker.map((t: string) => (
             <TickerItem key={t}>{t}</TickerItem>
           ))}
         </Marquee>

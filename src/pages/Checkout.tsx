@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type InputHTMLAttributes } from "react";
-import { STATES, byId, money } from "../data/catalog";
+import { STATES, money } from "../data/catalog";
 import { FREE_SHIP_AT, useStore, type Order } from "../lib/store";
 import { Link, navigate } from "../lib/router";
 import { Stepper } from "../components/ui";
@@ -47,7 +47,7 @@ type Pay = "UPI" | "Card" | "Cash on delivery";
 type ShipMethod = "Standard" | "Express";
 
 export function Checkout() {
-  const { cart, cartSubtotal, setQty, placeOrder, toast } = useStore();
+  const { cart, cartSubtotal, setQty, placeOrder, toast, byId } = useStore();
   const [form, setForm] = useState<Form>(initial);
   const [pay, setPay] = useState<Pay>("UPI");
   const [ship, setShip] = useState<ShipMethod>("Standard");

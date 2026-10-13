@@ -29,8 +29,8 @@ export function Footer() {
         <div className="md:col-span-4">
           <Monogram className="text-3xl text-paper" />
           <p className="mt-5 max-w-xs text-sm leading-relaxed text-fog">
-            The complete Indian wardrobe, online only — Banarasi zari, chikankari kurtas, lehengas
-            and office formals bought direct from the weaver and delivered pan-India.
+            The complete Indian menswear wardrobe, online only — sherwanis, chikankari kurtas, Nehru
+            jackets and office formals bought direct from the weaver and delivered pan-India.
           </p>
           <div className="mt-6 space-y-2.5 text-sm text-fog">
             <p className="flex items-center gap-2.5">
@@ -69,7 +69,7 @@ export function Footer() {
         <div className="md:col-span-2">
           <h3 className="text-[10px] font-bold uppercase tracking-[0.24em] text-gold">Explore</h3>
           <ul className="mt-4 space-y-2.5 text-sm">
-            <li><Link to="/shop?cat=Lehengas" className="link-line grow text-fog hover:text-paper">The Festive Edit</Link></li>
+            <li><Link to="/shop?cat=Sherwanis" className="link-line grow text-fog hover:text-paper">The Festive Edit</Link></li>
             <li><Link to="/shop" className="link-line grow text-fog hover:text-paper">New Arrivals</Link></li>
             <li><Link to="/?s=lookbook" className="link-line grow text-fog hover:text-paper">Lookbook</Link></li>
             <li><Link to="/?s=story" className="link-line grow text-fog hover:text-paper">Loom to Doorstep</Link></li>

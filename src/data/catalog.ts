@@ -1,44 +1,37 @@
-/* ---------------- imagery ---------------- */
+/* ==================== VASANA — Men's Indian Clothing ==================== */
 
+/* ---------- imagery ---------- */
 const U = (id: string) =>
   `https://images.unsplash.com/photo-${id}?fm=jpg&q=80&w=1100&auto=format&fit=crop`;
 
-/* generated in-studio */
+/* Generated in-studio (men's) */
 export const GEN_KURTA =
   "https://image.qwenlm.ai/generated-images/f51e6392-02a6-4521-8472-b7ca4c3b1746/_result.png";
 export const GEN_BLAZER =
   "https://image.qwenlm.ai/generated-images/a9c67a5b-3242-41e3-9f57-1f8cb7d83f22/_result.png";
 
-/* Unsplash photography */
-export const LEH_MAROON = U("1756483488645-5973a1a92e33");
-export const LEH_GREEN = U("1756483510809-122c56fbb035");
-export const LEH_ROSE = U("1756483510859-c0ab4c45782c");
-export const LEH_BRIDAL = U("1762708595603-3b06c63dce9c");
-export const SONA_TRAD = U("1767955694884-d4bf352c23c2");
-export const SAREE_GREEN = U("1679006831648-7c9ea12e5807");
-export const SAREE_PURPLE = U("1641699862936-be9f49b1c38d");
-export const SAREE_RED = U("1610030469983-98e550d6193c");
-export const SAREE_PINK = U("1617627143750-d86bc21e42bb");
-export const KURTA_HALDI = U("1759720883040-af9be070929e");
-export const KURTA_LAL = U("1716655359683-791d415c3f4c");
-export const KURTA_VAN = U("1760162693478-4c96b6c99d55");
-export const GOWN_MIDNIGHT = U("1640745690845-4d6aa890811d");
-export const CASUAL_KURTI = U("1715090826982-a93a7c74e880");
-export const CASUAL_DENIM = U("1542272604-787c3835535d");
-export const CASUAL_TEE = U("1710440189404-e95fabead2a3");
-export const FORMAL_TIE = U("1507679799987-c73779587ccf");
-export const LOOK_FIELD = U("1645856049235-8464376187fa");
-export const LOOK_GRASS = U("1645856048803-51971c462707");
+/* Men's Indian wear — Unsplash */
+export const MEN_KURTA_GREEN = U("1727835523545-70ee992b5763");
+export const MEN_KURTA_YELLOW = U("1768807478320-fcfd3929acb2");
+export const MEN_KURTA_BLUE = U("1767775498862-d4740ce574ce");
+export const MEN_KURTA_PURPLE = U("1774267230662-575d1f4ec1bd");
+export const MEN_FORMAL_WHITE = U("1647689662423-7948c8523256");
+export const MEN_CASUAL_RED = U("1628250521470-28c1fc54616c");
+export const MEN_TRAD_TWO = U("1774438028955-657a8aaea934");
+export const MEN_TRAD_COLOR = U("1774438027294-3399070a2dbe");
+export const MEN_POOL = U("1710242350089-65eef7e49364");
+export const MEN_SLEEVES = U("1744551358303-46edae8b374b");
+export const MEN_BLACK = U("1711044871601-301f9b0ecf91");
+export const MEN_FLOWERS = U("1727835523550-18478cacefa2");
 
-/* ---------------- types ---------------- */
-
+/* ---------- types ---------- */
 export type Category =
-  | "Sarees"
-  | "Lehengas"
+  | "Sherwanis"
   | "Kurtas & Sets"
-  | "Indo-Western"
-  | "Casual"
-  | "Official";
+  | "Nehru Jackets"
+  | "Formal Wear"
+  | "Casual Wear"
+  | "Jodhpuri Suits";
 
 export type Product = {
   id: string;
@@ -49,7 +42,7 @@ export type Product = {
   colorway: string;
   img: string;
   filter?: string;
-  badge?: "New" | "Bestseller" | "Low stock" | "Festive pick";
+  badge?: "New" | "Bestseller" | "Low stock" | "Festive pick" | "Wedding";
   fabric: string;
   details: string;
   sizes: string[];
@@ -59,388 +52,331 @@ export type Product = {
   reviews: number;
 };
 
-const APPAREL = ["XS", "S", "M", "L", "XL"];
-const WAIST = ["28", "30", "32", "34", "36"];
-const COAT = ["38", "40", "42", "44"];
+const S = ["S", "M", "L", "XL", "XXL"];
+const COAT = ["38", "40", "42", "44", "46"];
+const WAIST = ["30", "32", "34", "36", "38"];
 
-export const PRODUCTS: Product[] = [
-  /* ---- SAREES ---- */
+export const DEFAULT_PRODUCTS: Product[] = [
+  /* ---- SHERWANIS ---- */
   {
-    id: "banarasi-rani",
-    name: "Banarasi Silk Saree",
-    category: "Sarees",
-    price: 6999,
-    colorway: "Rani Pink",
-    img: SAREE_RED,
-    badge: "Bestseller",
-    fabric: "Pure Katan silk, real zari border, handwoven in Varanasi.",
-    details:
-      "Woven over 21 days on a handloom in Varanasi. Kadiyal border with real silver-zari dipped in gold. Ships with a running blouse piece and the weaver's name on the fall.",
-    sizes: ["Free size"],
+    id: "sher-ivory-gold",
+    name: "Royal Ivory Sherwani",
+    category: "Sherwanis",
+    price: 24999,
+    colorway: "Ivory & Gold",
+    img: GEN_KURTA,
+    filter: "brightness(1.25) saturate(0.7) sepia(0.15)",
+    badge: "Wedding",
+    fabric: "Raw silk with real zari embroidery, fully lined.",
+    details: "The groom's sherwani. Hand-embroidered zari across the yoke and cuffs, silk-lined throughout. Includes matching churidar and dupatta.",
+    sizes: COAT,
     featured: true,
     rating: 4.9,
-    reviews: 214,
-  },
-  {
-    id: "banarasi-sona",
-    name: "Banarasi Silk Saree",
-    category: "Sarees",
-    price: 7499,
-    colorway: "Sona Gold",
-    img: SONA_TRAD,
-    badge: "New",
-    fabric: "Katan silk, meenakari butta, sona-ranga dhaaga.",
-    details:
-      "The festive colourway of our Banarasi — sun-gold body with maroon meenakari bootis. A saree that photographs the way it feels: heavy, warm, heirloom.",
-    sizes: ["Free size"],
-    isNew: true,
-    rating: 4.8,
-    reviews: 63,
-  },
-  {
-    id: "kanchi-mehrun",
-    name: "Kanchipuram Saree",
-    category: "Sarees",
-    price: 5999,
-    colorway: "Mehrun Purple",
-    img: SAREE_PURPLE,
-    fabric: "Mulberry silk, korvai border, gold-checked pallu.",
-    details:
-      "Classic korvai technique where the border is woven separately and interlocked — it will never peel away. Blouse piece included.",
-    sizes: ["Free size"],
-    rating: 4.8,
-    reviews: 128,
-  },
-  {
-    id: "chanderi-hara",
-    name: "Chanderi Cotton Saree",
-    category: "Sarees",
-    price: 3499,
-    colorway: "Hara Green",
-    img: SAREE_GREEN,
-    badge: "New",
-    fabric: "Cotton-silk Chanderi, ashrafi butta, feather-light drape.",
-    details:
-      "The office-to-occasion saree. Sheer, weightless Chanderi from Madhya Pradesh that drapes in five minutes and breathes all day.",
-    sizes: ["Free size"],
-    isNew: true,
-    rating: 4.7,
     reviews: 87,
   },
-
-  /* ---- LEHENGAS ---- */
   {
-    id: "meera-maroon",
-    name: "Zardozi Lehenga",
-    category: "Lehengas",
-    price: 12999,
+    id: "sher-maroon",
+    name: "Maroon Velvet Sherwani",
+    category: "Sherwanis",
+    price: 21999,
     colorway: "Maroon",
-    img: LEH_MAROON,
+    img: MEN_TRAD_TWO,
     badge: "Bestseller",
-    fabric: "Raw silk, hand-worked zardozi, cancan-lined flare.",
-    details:
-      "Six metres of flare with 400 hours of zardozi across the hem. Dupatta with a hand-rolled edge included; choli stitched to your measurements on request.",
-    sizes: ["S", "M", "L", "XL"],
+    fabric: "Crushed velvet with dabka work, satin lining.",
+    details: "Rich maroon velvet with antique-gold dabka embroidery. A statement piece for receptions and sangeet nights.",
+    sizes: COAT,
     featured: true,
-    rating: 4.9,
-    reviews: 176,
-  },
-  {
-    id: "meera-emerald",
-    name: "Zardozi Lehenga",
-    category: "Lehengas",
-    price: 13999,
-    colorway: "Emerald",
-    img: LEH_GREEN,
-    badge: "New",
-    fabric: "Raw silk in emerald, antique-gold zardozi.",
-    details:
-      "The sangeet colourway — emerald that reads green under warm light and teal under white. Mirror-work buttis catch every phera of the dance floor.",
-    sizes: ["S", "M", "L", "XL"],
-    isNew: true,
     rating: 4.8,
-    reviews: 54,
+    reviews: 124,
   },
   {
-    id: "aisha-gulabi",
-    name: "Cape Lehenga Set",
-    category: "Lehengas",
-    price: 11499,
-    colorway: "Gulabi",
-    img: LEH_ROSE,
-    fabric: "Georgette lehenga with a sheer embroidered cape.",
-    details:
-      "For the bride who skips the dupatta. A fluid georgette lehenga with a full embroidered cape — grand entrances, free hands.",
-    sizes: ["S", "M", "L"],
-    rating: 4.9,
-    reviews: 92,
-  },
-  {
-    id: "noor-scarlet",
-    name: "Bridal Lehenga",
-    category: "Lehengas",
-    price: 18999,
+    id: "sher-navy",
+    name: "Navy Bandhgala Sherwani",
+    category: "Sherwanis",
+    price: 19999,
     compareAt: 24999,
-    colorway: "Scarlet",
-    img: LEH_BRIDAL,
+    colorway: "Navy",
+    img: MEN_TRAD_COLOR,
+    filter: "hue-rotate(200deg) saturate(0.8) brightness(0.85)",
     badge: "Low stock",
-    fabric: "Velvet bridal lehenga, dabka & kundan work, double dupatta.",
-    details:
-      "Our atelier bridal piece in scarlet velvet with dabka, kundan and pearl work. Two dupattas — one heavy, one soft. Only a few sizes remain this season.",
-    sizes: ["S", "M", "L"],
-    rating: 5.0,
-    reviews: 41,
+    fabric: "Silk-blend bandhgala silhouette with tonal embroidery.",
+    details: "A modern bandhgala cut — Mandarin collar, concealed placket, tonal silk embroidery. For the groom who wants understated grandeur.",
+    sizes: COAT,
+    rating: 4.7,
+    reviews: 56,
   },
 
   /* ---- KURTAS & SETS ---- */
   {
-    id: "chikankari-ivory",
+    id: "kurta-ivory-chikan",
     name: "Chikankari Kurta Set",
     category: "Kurtas & Sets",
-    price: 2499,
+    price: 3499,
     colorway: "Ivory",
     img: GEN_KURTA,
-    badge: "Festive pick",
-    fabric: "Hand-embroidered Lucknowi chikankari on cotton, straight-cut pyjama.",
-    details:
-      "Shadow-work chikankari done by hand in Lucknow — each kurta carries roughly 18 hours of embroidery. Relaxed straight cut, side pockets, breathable cotton.",
-    sizes: APPAREL,
+    badge: "Bestseller",
+    fabric: "Hand-embroidered Lucknowi chikankari on cotton, with pyjama.",
+    details: "Shadow-work chikankari done by hand in Lucknow — 18+ hours of embroidery per kurta. Relaxed straight cut with side pockets.",
+    sizes: S,
     featured: true,
-    rating: 4.8,
+    rating: 4.9,
     reviews: 342,
   },
   {
-    id: "anarkali-haldi",
-    name: "Anarkali Kurta Set",
+    id: "kurta-haldi",
+    name: "Haldi Yellow Kurta Set",
     category: "Kurtas & Sets",
-    price: 3999,
-    colorway: "Haldi",
-    img: KURTA_HALDI,
+    price: 2999,
+    colorway: "Haldi Yellow",
+    img: MEN_KURTA_YELLOW,
     badge: "New",
-    fabric: "Flared anarkali in haldi yellow with gota patti, churidar included.",
-    details:
-      "The haldi-morning anarkali. Gota patti on the yoke, a 24-kali flare that moves when you do, and a matching churidar.",
-    sizes: APPAREL,
+    fabric: "Cotton silk with gota patti border, churidar included.",
+    details: "The haldi-morning kurta. Gota patti on the yoke, relaxed A-line cut, matching churidar. Photographs beautifully in daylight.",
+    sizes: S,
     isNew: true,
     rating: 4.7,
     reviews: 98,
   },
   {
-    id: "festive-lal",
-    name: "Festive Kurta Set",
+    id: "kurta-indigo",
+    name: "Indigo Block-Print Kurta",
     category: "Kurtas & Sets",
-    price: 4499,
-    colorway: "Lal Red",
-    img: KURTA_LAL,
-    fabric: "Silk-blend kurta with mirror-work dupatta.",
-    details:
-      "Garba-ready and Diwali-proof — a lal-red silk blend with a mirror-work dupatta that does the lighting for you.",
-    sizes: APPAREL,
-    rating: 4.6,
-    reviews: 76,
+    price: 2499,
+    colorway: "Indigo",
+    img: MEN_KURTA_BLUE,
+    badge: "Festive pick",
+    fabric: "Hand block-printed cotton, natural indigo dye from Bagru.",
+    details: "Dabu mud-resist block printing from Bagru, Rajasthan. Each kurta is unique — no two prints repeat exactly.",
+    sizes: S,
+    featured: true,
+    rating: 4.8,
+    reviews: 167,
   },
   {
-    id: "heritage-van",
-    name: "Heritage Kurta Set",
+    id: "kurta-emerald",
+    name: "Emerald Silk Kurta",
     category: "Kurtas & Sets",
-    price: 3299,
-    colorway: "Van Green",
-    img: KURTA_VAN,
+    price: 4999,
+    colorway: "Emerald",
+    img: MEN_KURTA_GREEN,
     badge: "New",
-    fabric: "Block-printed cotton kurta, dabu mud-resist print from Bagru.",
-    details:
-      "Dabu mud-resist block printing from Bagru, Rajasthan — every print is stamped by hand, so no two kurtas repeat exactly.",
-    sizes: APPAREL,
+    fabric: "Pure tussar silk, tonal embroidery, straight cut.",
+    details: "Tussar silk from Bhagalpur in a deep emerald. Tonal silk embroidery at the placket and cuffs. For Diwali, Eid, and every evening that calls for it.",
+    sizes: S,
     isNew: true,
     rating: 4.8,
-    reviews: 59,
+    reviews: 73,
   },
 
-  /* ---- INDO-WESTERN ---- */
+  /* ---- NEHRU JACKETS ---- */
   {
     id: "nehru-indigo",
     name: "Kurta & Nehru Jacket",
-    category: "Indo-Western",
-    price: 5499,
+    category: "Nehru Jackets",
+    price: 5999,
     colorway: "Indigo",
     img: GEN_KURTA,
     filter: "hue-rotate(12deg) saturate(1.2) brightness(0.94)",
     badge: "Bestseller",
-    fabric: "Indigo-dyed Nehru jacket over an ivory chikankari kurta.",
-    details:
-      "The wedding-guest uniform. A hand-dyed indigo Nehru jacket that layers over the ivory kurta — formal enough for the mandap, easy enough for the after-party.",
+    fabric: "Hand-dyed indigo Nehru jacket over ivory chikankari kurta.",
+    details: "The wedding-guest uniform. Hand-dyed indigo Nehru jacket layered over an ivory chikankari kurta — formal enough for the mandap, easy enough for the after-party.",
     sizes: COAT,
     featured: true,
     rating: 4.9,
     reviews: 187,
   },
   {
-    id: "midnight-gown",
-    name: "Fusion Gown",
-    category: "Indo-Western",
-    price: 7999,
-    colorway: "Midnight",
-    img: GOWN_MIDNIGHT,
-    fabric: "Crepe gown with hand-embroidered bodice, palazzo drape.",
-    details:
-      "An indo-western silhouette with a lehenga's drama — fitted embroidered bodice, fluid midnight crepe, trailing palazzo drape.",
-    sizes: APPAREL,
-    rating: 4.7,
-    reviews: 64,
-  },
-  {
     id: "nehru-noir",
-    name: "Nehru Jacket",
-    category: "Indo-Western",
-    price: 4999,
-    compareAt: 5999,
+    name: "Noir Bandhgala Jacket",
+    category: "Nehru Jackets",
+    price: 6499,
     colorway: "Noir",
-    img: GEN_KURTA,
-    filter: "grayscale(0.92) brightness(0.78) contrast(1.05)",
+    img: MEN_BLACK,
+    filter: "grayscale(0.3) brightness(0.85)",
     badge: "Low stock",
-    fabric: "Jet-black bandhgala jacket, satin lapel-less collar.",
-    details:
-      "The noir bandhgala — sharp enough for the boardroom, traditional enough for the baraat. Slim cut with functioning sleeve buttons.",
+    fabric: "Jet-black wool-blend bandhgala, satin lapel-less collar.",
+    details: "The noir bandhgala — sharp enough for the boardroom, traditional enough for the baraat. Slim cut with functioning sleeve buttons.",
     sizes: COAT,
     rating: 4.8,
-    reviews: 71,
+    reviews: 91,
   },
-
-  /* ---- CASUAL ---- */
   {
-    id: "dilli-kurti",
-    name: "Casual Kurti",
-    category: "Casual",
-    price: 1499,
-    colorway: "Dilli Street",
-    img: CASUAL_KURTI,
+    id: "nehru-olive",
+    name: "Olive Linen Nehru Jacket",
+    category: "Nehru Jackets",
+    price: 3999,
+    colorway: "Olive",
+    img: MEN_KURTA_GREEN,
+    filter: "sepia(0.2) saturate(0.8) brightness(0.95)",
     badge: "New",
-    fabric: "Slub cotton kurti, scooter-proof length, front pockets.",
-    details:
-      "The everyday kurti — slub cotton that survives Delhi summers, a length that works on a scooter, and pockets that actually fit a phone.",
-    sizes: APPAREL,
+    fabric: "Washed linen, half-lined, horn buttons.",
+    details: "Summer-weight linen in olive — the daytime layering piece. Half-lined for breathability, horn buttons for authenticity.",
+    sizes: COAT,
     isNew: true,
     rating: 4.6,
-    reviews: 143,
-  },
-  {
-    id: "indigo-denim",
-    name: "Slim Denim",
-    category: "Casual",
-    price: 2199,
-    colorway: "Indigo Wash",
-    img: CASUAL_DENIM,
-    fabric: "13.5oz stretch denim, mid-rise slim taper.",
-    details:
-      "A mid-rise slim taper in 13.5oz denim with 2% stretch — pairs with tees and kurtas alike. Sanforized so the fit you buy is the fit you keep.",
-    sizes: WAIST,
-    rating: 4.7,
-    reviews: 231,
-  },
-  {
-    id: "ecru-tee",
-    name: "Everyday Tee (Pack of 2)",
-    category: "Casual",
-    price: 999,
-    colorway: "Ecru & Indigo",
-    img: CASUAL_TEE,
-    badge: "New",
-    fabric: "220gsm combed cotton, pre-shrunk, ribbed collar.",
-    details:
-      "Two heavyweight combed-cotton tees — one ecru, one indigo. Pre-shrunk, double-stitched, and thick enough to skip the vest.",
-    sizes: APPAREL,
-    isNew: true,
-    rating: 4.5,
-    reviews: 189,
+    reviews: 54,
   },
 
-  /* ---- OFFICIAL ---- */
+  /* ---- FORMAL WEAR ---- */
   {
-    id: "navy-blazer",
-    name: "Tailored Blazer",
-    category: "Official",
-    price: 6499,
+    id: "blazer-navy",
+    name: "Tailored Navy Blazer",
+    category: "Formal Wear",
+    price: 8999,
     colorway: "Navy",
     img: GEN_BLAZER,
     badge: "Bestseller",
-    fabric: "Half-canvassed tropical wool blazer, corozo buttons.",
-    details:
-      "A half-canvassed blazer in tropical-weight wool — built for Indian summers and air-conditioned meetings. Slim lapel, double vent, working cuffs.",
+    fabric: "Half-canvassed tropical wool, corozo buttons.",
+    details: "Half-canvassed in tropical-weight wool — built for Indian summers and air-conditioned meetings. Slim lapel, double vent, working cuffs.",
     sizes: COAT,
     featured: true,
     rating: 4.9,
     reviews: 118,
   },
   {
-    id: "ivory-shirt",
-    name: "Formal Shirt",
-    category: "Official",
-    price: 1799,
+    id: "shirt-ivory",
+    name: "Formal Ivory Shirt",
+    category: "Formal Wear",
+    price: 2299,
     colorway: "Ivory",
-    img: FORMAL_TIE,
-    fabric: "Two-ply Giza cotton, cutaway collar, mother-of-pearl buttons.",
-    details:
-      "The interview shirt. Two-ply Egyptian cotton with a cutaway collar that sits right with or without a tie. Wrinkle-resistant finish.",
-    sizes: APPAREL,
+    img: MEN_FORMAL_WHITE,
+    fabric: "Two-ply Giza cotton, cutaway collar, MOP buttons.",
+    details: "The interview shirt. Two-ply Egyptian cotton with a cutaway collar that sits right with or without a tie. Wrinkle-resistant finish.",
+    sizes: S,
     rating: 4.7,
     reviews: 156,
   },
   {
-    id: "charcoal-trouser",
-    name: "Pleated Trouser",
-    category: "Official",
-    price: 2299,
+    id: "trouser-charcoal",
+    name: "Pleated Formal Trouser",
+    category: "Formal Wear",
+    price: 2999,
     colorway: "Charcoal",
     img: GEN_BLAZER,
     filter: "grayscale(0.55) brightness(0.82) sepia(0.12)",
     fabric: "High-twist wool-blend, single pleat, half-lined.",
-    details:
-      "A single-pleat office trouser in high-twist wool that keeps its crease from the local train to the late meeting. Half-lined for breathability.",
+    details: "Single-pleat in high-twist wool that keeps its crease from the local train to the late meeting. Half-lined for breathability.",
     sizes: WAIST,
     rating: 4.8,
     reviews: 94,
   },
+
+  /* ---- CASUAL WEAR ---- */
+  {
+    id: "casual-linen-kurta",
+    name: "Everyday Linen Kurta",
+    category: "Casual Wear",
+    price: 1999,
+    colorway: "Natural",
+    img: MEN_POOL,
+    badge: "New",
+    fabric: "Washed Belgian linen, relaxed fit, side slits.",
+    details: "The Sunday kurta. Washed Belgian linen that gets softer with every wash. Relaxed fit, side slits, mother-of-pearl buttons.",
+    sizes: S,
+    isNew: true,
+    rating: 4.6,
+    reviews: 203,
+  },
+  {
+    id: "casual-cotton-shirt",
+    name: "Cotton Casual Shirt",
+    category: "Casual Wear",
+    price: 1499,
+    colorway: "Rust",
+    img: MEN_CASUAL_RED,
+    filter: "sepia(0.15) saturate(1.1)",
+    fabric: "Slub cotton, camp collar, relaxed fit.",
+    details: "A camp-collar shirt in textured slub cotton — pairs with denim, chinos, or lungis depending on the afternoon.",
+    sizes: S,
+    rating: 4.5,
+    reviews: 178,
+  },
+  {
+    id: "casual-denim",
+    name: "Slim Denim",
+    category: "Casual Wear",
+    price: 2499,
+    colorway: "Indigo Wash",
+    img: MEN_SLEEVES,
+    filter: "saturate(0.8) brightness(0.95)",
+    fabric: "13.5oz stretch denim, mid-rise slim taper.",
+    details: "Mid-rise slim taper in 13.5oz denim with 2% stretch. Sanforized so the fit you buy is the fit you keep.",
+    sizes: WAIST,
+    rating: 4.7,
+    reviews: 231,
+  },
+
+  /* ---- JODHPURI SUITS ---- */
+  {
+    id: "jodhpuri-cream",
+    name: "Cream Jodhpuri Suit",
+    category: "Jodhpuri Suits",
+    price: 14999,
+    colorway: "Cream",
+    img: MEN_KURTA_PURPLE,
+    filter: "brightness(1.3) saturate(0.3) sepia(0.2)",
+    badge: "Wedding",
+    fabric: "Silk-blend Jodhpuri suit with embroidered jacket.",
+    details: "The complete Jodhpuri — jacket with tonal silk embroidery, matching trouser, and silk pocket square. For receptions, engagements, and the kind of evening that deserves dressing up.",
+    sizes: COAT,
+    featured: true,
+    rating: 4.9,
+    reviews: 62,
+  },
+  {
+    id: "jodhpuri-black",
+    name: "Black Jodhpuri Suit",
+    category: "Jodhpuri Suits",
+    price: 12999,
+    colorway: "Black",
+    img: MEN_TRAD_TWO,
+    filter: "brightness(0.7) grayscale(0.4)",
+    badge: "Festive pick",
+    fabric: "Wool-blend Jodhpuri with satin piping.",
+    details: "The evening Jodhpuri in black wool-blend with satin piping. Mandarin collar, concealed buttons, trouser with a clean break.",
+    sizes: COAT,
+    rating: 4.8,
+    reviews: 89,
+  },
 ];
 
-export const byId = new Map(PRODUCTS.map((p) => [p.id, p]));
-
 export const CATEGORIES: { name: Category; img: string; note: string }[] = [
-  { name: "Sarees", img: SAREE_PINK, note: "Handloom & Banarasi" },
-  { name: "Lehengas", img: LEH_MAROON, note: "Festive & bridal" },
-  { name: "Kurtas & Sets", img: GEN_KURTA, note: "Chikankari to anarkali" },
-  { name: "Indo-Western", img: GOWN_MIDNIGHT, note: "Fusion dressing" },
-  { name: "Casual", img: CASUAL_KURTI, note: "Kurtis, tees & denim" },
-  { name: "Official", img: GEN_BLAZER, note: "Office & occasions" },
+  { name: "Sherwanis", img: MEN_TRAD_TWO, note: "Wedding & festive" },
+  { name: "Kurtas & Sets", img: GEN_KURTA, note: "Everyday ethnic" },
+  { name: "Nehru Jackets", img: MEN_KURTA_BLUE, note: "Layering pieces" },
+  { name: "Formal Wear", img: GEN_BLAZER, note: "Blazers & shirts" },
+  { name: "Casual Wear", img: MEN_POOL, note: "Linen & cotton" },
+  { name: "Jodhpuri Suits", img: MEN_KURTA_PURPLE, note: "Indian formal" },
 ];
 
 export const OCCASIONS: { title: string; note: string; cat: Category; img: string }[] = [
-  { title: "Casual days", note: "Kurtis, tees & denim", cat: "Casual", img: CASUAL_KURTI },
-  { title: "Office hours", note: "Blazers & formal shirts", cat: "Official", img: GEN_BLAZER },
-  { title: "Wedding season", note: "Lehengas that turn rooms", cat: "Lehengas", img: LEH_BRIDAL },
-  { title: "Festive nights", note: "Zari, silk & sparkle", cat: "Sarees", img: SAREE_PINK },
-  { title: "Evening events", note: "Indo-western drama", cat: "Indo-Western", img: GOWN_MIDNIGHT },
+  { title: "Wedding season", note: "Sherwanis & Jodhpuri", cat: "Sherwanis", img: MEN_TRAD_TWO },
+  { title: "Festive nights", note: "Silk kurtas & Nehru jackets", cat: "Kurtas & Sets", img: GEN_KURTA },
+  { title: "Office hours", note: "Blazers & formal shirts", cat: "Formal Wear", img: GEN_BLAZER },
+  { title: "Casual days", note: "Linen kurtas & cotton", cat: "Casual Wear", img: MEN_POOL },
+  { title: "Receptions", note: "Bandhgalas & Nehru jackets", cat: "Nehru Jackets", img: MEN_BLACK },
 ];
 
 export const PRESS = [
   {
-    quote: "The online store making handloom feel inevitable again — Banarasi zari to boardroom blazers, one cart.",
-    source: "Vogue India",
+    quote: "The menswear label making Indian occasion-wear feel inevitable — sherwanis to boardroom blazers, one cart.",
+    source: "GQ India",
     issue: "Festive Issue",
   },
   {
-    quote: "Vasana's size-exchange promise quietly fixed Indian e-commerce's worst habit.",
-    source: "Femina",
+    quote: "Finally — kurtas, Nehru jackets and office formals with the same level of craft and the same 48-hour dispatch.",
+    source: "Men's Health India",
     issue: "Style Desk",
   },
   {
-    quote: "Finally — lehengas, kurtas and office formals with the same level of craft and the same 48-hour dispatch.",
-    source: "ELLE India",
+    quote: "Vasana's size-exchange promise quietly fixed Indian menswear e-commerce's worst habit.",
+    source: "Femina",
     issue: "AW'25 Edit",
   },
 ];
 
-export const TICKER = [
-  "Festive Edit '25 is live",
+export const DEFAULT_TICKER = [
+  "Men's Festive Edit '25 is live",
   "Free delivery on orders over ₹1,999",
   "Cash on Delivery across India",
   "Easy 7-day returns & free size exchange",
@@ -466,15 +402,15 @@ export const POLICIES: Record<string, { title: string; body: string[] }> = {
   sizes: {
     title: "Size Guide",
     body: [
-      "Sarees are free size (5.5 m with running blouse piece). Lehengas run true with a 2-inch alteration allowance built in; cholis can be custom-stitched at checkout.",
       "Kurtas and shirts are cut to a relaxed Indian block — when between sizes, size down for kurtas and up for blazers. Waist sizes are in inches and true to measure.",
+      "Sherwanis and Jodhpuri suits run true with a 2-inch alteration allowance built in. Jacket sizes are chest measurements in inches.",
     ],
   },
   care: {
     title: "Care Guide",
     body: [
-      "Silk sarees and zardozi lehengas: dry clean only, wrap in muslin, air once a season away from direct sun. Refold along different lines to protect the weave.",
-      "Cotton kurtas and denims: cold machine wash inside-out, line dry in shade. Chikankari is best hand-washed gently — the embroidery repays it.",
+      "Silk sherwanis and embroidered pieces: dry clean only, wrap in muslin, air once a season away from direct sun.",
+      "Cotton and linen kurtas: cold machine wash inside-out, line dry in shade. Chikankari is best hand-washed gently — the embroidery repays it.",
     ],
   },
   privacy: {
@@ -497,3 +433,6 @@ export const money = (n: number) => `₹${n.toLocaleString("en-IN")}`;
 
 export const ADMIN_USER = "admin";
 export const ADMIN_PASS = "atelier25";
+
+/* Helper to create byId map from products array */
+export const createById = (products: Product[]) => new Map(products.map((p) => [p.id, p]));

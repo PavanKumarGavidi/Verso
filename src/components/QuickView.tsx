@@ -1,5 +1,5 @@
 import { useEffect, useState, type ReactNode } from "react";
-import { PRODUCTS, byId, money } from "../data/catalog";
+import { money } from "../data/catalog";
 import { useStore } from "../lib/store";
 import { Corners, Stars, Stepper } from "./ui";
 import { IconArrowR, IconClose, IconHeart, IconChevron } from "./icons";
@@ -44,7 +44,7 @@ function Accordion({ title, children }: { title: string; children: ReactNode }) 
 }
 
 export function QuickView() {
-  const { quickViewId, closeQuickView, addToCart, setCartOpen, wishlist, toggleWishlist } = useStore();
+  const { quickViewId, closeQuickView, addToCart, setCartOpen, wishlist, toggleWishlist, byId, products } = useStore();
   const product = quickViewId ? byId.get(quickViewId) : undefined;
 
   const [size, setSize] = useState<string | null>(null);
@@ -108,7 +108,7 @@ export function QuickView() {
           />
           <Corners light />
           <span className="absolute bottom-4 left-4 bg-ink/85 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] text-paper">
-            Piece N°{String(PRODUCTS.findIndex((x) => x.id === product.id) + 1).padStart(2, "0")} — AW'25
+            Piece N°{String(products.findIndex((x: any) => x.id === product.id) + 1).padStart(2, "0")} — AW'25
           </span>
         </div>
 

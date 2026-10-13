@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { CATEGORIES, PRODUCTS, type Category } from "../data/catalog";
+import { CATEGORIES, type Category } from "../data/catalog";
 import { useStore } from "../lib/store";
 import { Link, type Route } from "../lib/router";
 import { ProductCard } from "../components/ProductCard";
@@ -9,7 +9,7 @@ import { IconArrowR, IconClose, IconHeart, IconSearch } from "../components/icon
 type Sort = "featured" | "price-asc" | "price-desc" | "rating";
 
 export function Shop({ route }: { route: Route }) {
-  const { wishlist } = useStore();
+  const { wishlist, products } = useStore();
   const [cat, setCat] = useState<string>(route.query.get("cat") ?? "All");
   const [sort, setSort] = useState<Sort>("featured");
   const [q, setQ] = useState("");
@@ -24,7 +24,7 @@ export function Shop({ route }: { route: Route }) {
   }, [route.query]);
 
   const items = useMemo(() => {
-    let list = [...PRODUCTS];
+    let list = [...products];
     if (savedOnly) list = list.filter((p) => wishlist.includes(p.id));
     if (cat !== "All") list = list.filter((p) => p.category === cat);
     if (q.trim()) {

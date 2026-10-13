@@ -1,11 +1,11 @@
-import { byId, money } from "../data/catalog";
+import { money } from "../data/catalog";
 import { FREE_SHIP_AT, useStore } from "../lib/store";
 import { Link } from "../lib/router";
 import { Stepper } from "./ui";
 import { IconArrowR, IconClose, IconHanger, IconTrash, IconCheck } from "./icons";
 
 export function CartDrawer() {
-  const { cart, cartOpen, setCartOpen, setQty, removeLine, cartSubtotal, cartCount } = useStore();
+  const { cart, cartOpen, setCartOpen, setQty, removeLine, cartSubtotal, cartCount, byId } = useStore();
 
   const remaining = FREE_SHIP_AT - cartSubtotal;
   const progress = Math.min(100, Math.round((cartSubtotal / FREE_SHIP_AT) * 100));

@@ -8,6 +8,7 @@ const BADGE_STYLE: Record<string, string> = {
   Bestseller: "bg-ink text-paper",
   "Low stock": "bg-wine text-paper",
   "Festive pick": "bg-gold text-ink",
+  "Wedding": "bg-wine text-paper",
 };
 
 export function ProductCard({ product, compact }: { product: Product; compact?: boolean }) {
