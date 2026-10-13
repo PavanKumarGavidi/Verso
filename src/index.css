@@ -1,0 +1,213 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #1c1712;
+  --color-coal: #292119;
+  --color-paper: #ece7dd;
+  --color-bone: #e0d9cc;
+  --color-fog: #cbc3b2;
+  --color-smoke: #8a8172;
+  --color-wine: #6f2434;
+  --color-rouge: #97414f;
+  --color-gold: #b3873b;
+  --color-moss: #5d614f;
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "Archivo", "Helvetica Neue", Arial, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-paper text-ink font-body antialiased;
+  font-feature-settings: "ss01" on;
+}
+
+::selection {
+  background: var(--color-wine);
+  color: var(--color-paper);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-wine);
+  outline-offset: 2px;
+}
+
+/* ---------- film grain overlay ---------- */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0.055;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* ---------- keyframes ---------- */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes kenburns {
+  from { transform: scale(1.02) translate(0, 0); }
+  to { transform: scale(1.11) translate(-1.5%, -2%); }
+}
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.96) translateY(14px); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes toast-bar {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+@keyframes shake-x {
+  10%, 90% { transform: translateX(-1px); }
+  20%, 80% { transform: translateX(2px); }
+  30%, 50%, 70% { transform: translateX(-4px); }
+  40%, 60% { transform: translateX(4px); }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+
+/* ---------- motion helpers ---------- */
+.mq {
+  animation: marquee var(--mq-d, 30s) linear infinite;
+}
+.mq-slow { --mq-d: 46s; }
+.kenburns {
+  animation: kenburns 22s ease-in-out infinite alternate;
+  will-change: transform;
+}
+.rv {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.9s cubic-bezier(0.19, 0.7, 0.22, 1),
+    transform 0.9s cubic-bezier(0.19, 0.7, 0.22, 1);
+}
+.rv.in {
+  opacity: 1;
+  transform: none;
+}
+.rise { animation: rise-in 0.7s cubic-bezier(0.19, 0.7, 0.22, 1) both; }
+.pop { animation: pop-in 0.38s cubic-bezier(0.19, 0.7, 0.22, 1) both; }
+.shake { animation: shake-x 0.5s both; }
+.pulse-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+.toast-bar { animation: toast-bar 3.8s linear forwards; }
+
+.no-bar::-webkit-scrollbar { display: none; }
+.no-bar { scrollbar-width: none; }
+
+/* ---------- editorial helpers ---------- */
+.outline-text {
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--color-ink) 30%, transparent);
+}
+.outline-text-light {
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--color-paper) 35%, transparent);
+}
+
+/* slide-fill solid button */
+.btn-fill {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition: color 0.35s ease;
+}
+.btn-fill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-wine);
+  transform: translateY(101%);
+  transition: transform 0.4s cubic-bezier(0.19, 0.7, 0.22, 1);
+}
+.btn-fill:hover::before,
+.btn-fill:focus-visible::before {
+  transform: translateY(0);
+}
+.btn-fill.on-light::before { background: var(--color-wine); }
+
+/* growing underline */
+.link-line {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+  background-position: 0 100%;
+  transition: background-size 0.35s ease, color 0.25s ease;
+}
+.link-line.grow {
+  background-size: 0% 1px;
+}
+.link-line.grow:hover,
+.link-line.grow:focus-visible {
+  background-size: 100% 1px;
+}
+
+/* ---------- form fields (components layer so utilities can override) ---------- */
+@layer components {
+  .flabel {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-smoke);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .field {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.35);
+    border: 1px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+    padding: 0.72rem 0.85rem;
+    font-size: 0.875rem;
+    color: var(--color-ink);
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .field::placeholder { color: color-mix(in srgb, var(--color-smoke) 75%, transparent); }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-ink);
+    background: rgba(255, 255, 255, 0.6);
+  }
+  .field.err { border-color: var(--color-wine); background: rgba(111, 36, 52, 0.05); }
+  .field-dark {
+    background: rgba(28, 23, 18, 0.4);
+    border-color: color-mix(in srgb, var(--color-paper) 22%, transparent);
+    color: var(--color-paper);
+  }
+  .field-dark::placeholder { color: color-mix(in srgb, var(--color-fog) 60%, transparent); }
+  .field-dark:focus {
+    border-color: var(--color-paper);
+    background: rgba(28, 23, 18, 0.6);
+  }
+
+  select.field {
+    appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%231c1712' stroke-width='1.4'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    padding-right: 2.2rem;
+  }
+}
+
+/* thin hairline rulers */
+.rule { border-color: color-mix(in srgb, var(--color-ink) 12%, transparent); }
+.rule-light { border-color: color-mix(in srgb, var(--color-paper) 16%, transparent); }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rv { opacity: 1; transform: none; transition: none; }
+  .mq, .kenburns, .rise, .pop { animation: none; }
+}
